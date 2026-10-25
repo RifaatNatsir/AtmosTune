@@ -316,63 +316,61 @@ class PlaywrightRPAExecutor:
 
     def _sync_tracks_to_playlist(self, page: Page, tracks: List[Any]) -> int:
         """
-        Injects curated tracks into the Spotify playlist using the high-speed search widget.
+        Injects curated tracks directly into the Spotify playlist using the verified in-playlist search box.
         """
         in_search_sel = self.selectors["playlist_view"]["in_playlist_search_box"]
         add_btn_sel = self.selectors["playlist_view"]["in_playlist_add_button"]
-        open_search_sel = self.selectors["playlist_view"].get("in_playlist_open_search_button", "button:has-text('Add')")
 
         added_count = 0
 
         # Wait for Spotify SPA to hydrate
         try:
-            page.wait_for_selector("h1", timeout=15000)
+            page.wait_for_selector("h1", timeout=20000)
+            time.sleep(1.5)
         except Exception:
-            self.logger.debug("Playlist heading did not appear within 15s; proceeding.")
+            self.logger.debug("Playlist heading did not appear within 20s; proceeding.")
 
-        time.sleep(2.0)
+        # If a right-side panel is open, close it to keep main in-playlist view unobstructed
+        try:
+            close_btn = page.locator('button[aria-label="Close"]').first
+            if close_btn.is_visible(timeout=1000):
+                close_btn.click()
+                time.sleep(1.0)
+        except Exception:
+            pass
 
-        # Check if search input is already visible
+        # If search input is not visible, check for 'Find more' button and click it to reveal search
         search_input_locator = page.locator(in_search_sel).first
         if not search_input_locator.is_visible():
             try:
-                open_btn = page.locator(open_search_sel).first
-                if open_btn.is_visible(timeout=3000):
-                    self.logger.info("Clicking + Add button to open playlist search drawer...")
-                    open_btn.click()
+                find_more_btn = page.locator('button:has-text("Find more")').first
+                if find_more_btn.is_visible(timeout=3000):
+                    self.logger.info("Clicking 'Find more' to reveal in-playlist search box...")
+                    find_more_btn.click()
                     time.sleep(1.5)
             except Exception as exc:
-                self.logger.debug("Open search button error: %s", exc)
+                self.logger.debug("Could not click Find more: %s", exc)
 
         try:
-            self.logger.info("Locating search widget...")
+            self.logger.info("Locating in-playlist search box...")
             search_input = page.wait_for_selector(in_search_sel, timeout=12000)
             if search_input and search_input.is_visible():
-                self.logger.info("Playlist search widget active. Adding %d curated tracks...", len(tracks))
+                self.logger.info("In-playlist search widget active. Adding %d curated tracks...", len(tracks))
 
                 for idx, trk in enumerate(tracks, 1):
                     query = getattr(trk, "search_query", f"{trk.artist} - {trk.title}")
                     try:
                         search_input.fill("")
                         search_input.fill(query)
-                        time.sleep(1.2)
+                        time.sleep(1.0)
 
-                        # Locate the track-specific Add button
+                        # Locate the track-specific Add button in the search result row
                         add_btn = page.locator(add_btn_sel).first
                         if add_btn.is_visible(timeout=4000):
                             add_btn.click(force=True)
-                            time.sleep(0.5)
-
-                            # Dismiss any open menu/tippy overlay before searching next track
-                            try:
-                                page.keyboard.press("Escape")
-                                time.sleep(0.3)
-                            except Exception:
-                                pass
-
                             added_count += 1
                             self.logger.info("  [%02d/%02d] Added: %s", idx, len(tracks), query)
-                            time.sleep(0.4)
+                            time.sleep(0.6)
                         else:
                             self.logger.warning("  [%02d/%02d] Add button not found for: %s", idx, len(tracks), query)
                     except Exception as trk_err:
