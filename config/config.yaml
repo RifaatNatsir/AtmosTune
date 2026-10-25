@@ -1,0 +1,291 @@
+# AtmosTune Configuration
+# Lightweight, run-and-kill background weather/time playlist auto-curator
+
+weather_api:
+  # OpenWeatherMap API Key. Can also be set via OPENWEATHER_API_KEY environment variable.
+  # If empty, AtmosTune smoothly falls back to realistic environmental simulation.
+  api_key: ""
+  lat: 40.7128
+  lon: -74.0060
+  city_name: "New York"
+  units: "metric"  # "metric" (Celsius) or "imperial" (Fahrenheit)
+  timeout_seconds: 5
+  mock_fallback: true
+
+scheduling:
+  # Minimum minutes required between automated updates, unless weather/time block changes
+  cooldown_minutes: 60
+  # Minimum temperature variation in degrees to warrant an early update
+  min_temperature_delta: 4.0
+  # Time block definitions (24-hour clock, [start_inclusive, end_exclusive])
+  time_blocks:
+    early_morning:
+      start: 5
+      end: 8
+    morning:
+      start: 8
+      end: 12
+    afternoon:
+      start: 12
+      end: 17
+    evening:
+      start: 17
+      end: 21
+    night:
+      start: 21
+      end: 5
+
+playlist:
+  # Target Spotify playlist URL to be rewritten
+  # Example: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
+  target_playlist_url: "https://open.spotify.com/playlist/YOUR_PLAYLIST_ID_HERE"
+  playlist_name_prefix: "AtmosTune • "
+  max_tracks: 10
+  # Energy curve type: "bell_curve" (gentle start -> peak -> warm down), "steady", or "ascending"
+  curve_type: "bell_curve"
+  curve_sigma: 0.18
+
+browser:
+  # Persistent profile path preserving authentication cookies across run-and-kill cycles
+  profile_dir: "./browser_profile"
+  headless: true
+  page_timeout_sec: 30
+  action_timeout_sec: 8
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+notifications:
+  enabled: true
+  app_name: "AtmosTune"
+  timeout_sec: 6
+  log_file: "./logs/atmostune.log"
+  log_level: "INFO"
+  max_log_bytes: 2097152  # 2MB
+  backup_count: 3
+
+# Weather & Time -> Mood Mapping Rules
+# Evaluates local weather condition + time block to compute target musical parameters
+mood_matrix:
+  Rain:
+    early_morning:
+      mood_name: "Raindrop Dawn"
+      description: "Delicate acoustic and gentle ambient rain murmurs"
+      target_energy: 0.25
+      target_valence: 0.35
+      preferred_genres: ["ambient", "acoustic", "lofi"]
+    morning:
+      mood_name: "Cozy Productivity"
+      description: "Warm lofi beats and focused instrumental textures"
+      target_energy: 0.42
+      target_valence: 0.48
+      preferred_genres: ["lofi", "chillhop", "neo-classical"]
+    afternoon:
+      mood_name: "Overcast Contemplation"
+      description: "Atmospheric indie, post-rock, and cinematic rhythms"
+      target_energy: 0.48
+      target_valence: 0.40
+      preferred_genres: ["post-rock", "indie", "downtempo"]
+    evening:
+      mood_name: "Neon Puddle Reflections"
+      description: "Chilled synthwave, trip-hop, and twilight electronics"
+      target_energy: 0.52
+      target_valence: 0.50
+      preferred_genres: ["synthwave", "chillwave", "trip-hop"]
+    night:
+      mood_name: "Midnight Rain Cafe"
+      description: "Deep mellow jazz, quiet piano, and sleepy ambient whispers"
+      target_energy: 0.20
+      target_valence: 0.25
+      preferred_genres: ["ambient", "jazz", "lofi"]
+
+  Drizzle:
+    early_morning:
+      mood_name: "Soft Morning Mist"
+      description: "Gentle acoustic strings and waking calm"
+      target_energy: 0.28
+      target_valence: 0.40
+      preferred_genres: ["acoustic", "ambient", "indie-folk"]
+    morning:
+      mood_name: "Mellow Focus"
+      description: "Subtle beats for productive flow"
+      target_energy: 0.45
+      target_valence: 0.50
+      preferred_genres: ["lofi", "deep-focus", "instrumental"]
+    afternoon:
+      mood_name: "Quiet Drift"
+      description: "Melodic indie and chill electronica"
+      target_energy: 0.45
+      target_valence: 0.45
+      preferred_genres: ["indie", "downtempo", "chillhop"]
+    evening:
+      mood_name: "Amber Streetlights"
+      description: "Warm downtempo and dream pop"
+      target_energy: 0.48
+      target_valence: 0.52
+      preferred_genres: ["dream-pop", "synthwave", "indie"]
+    night:
+      mood_name: "Drizzle Dreams"
+      description: "Slow instrumental lullabies"
+      target_energy: 0.18
+      target_valence: 0.30
+      preferred_genres: ["ambient", "neo-classical", "lofi"]
+
+  Clear:
+    early_morning:
+      mood_name: "Golden Awakening"
+      description: "Crisp acoustic strums and uplifting sunrise melodies"
+      target_energy: 0.45
+      target_valence: 0.70
+      preferred_genres: ["acoustic", "indie-folk", "chill-pop"]
+    morning:
+      mood_name: "Sunlit Momentum"
+      description: "Breezy indie pop, vibrant rhythms, and positive energy"
+      target_energy: 0.70
+      target_valence: 0.80
+      preferred_genres: ["indie-pop", "upbeat-funk", "electronic"]
+    afternoon:
+      mood_name: "High Noon Radiance"
+      description: "Upbeat grooves, funky basslines, and euphoric vibes"
+      target_energy: 0.82
+      target_valence: 0.85
+      preferred_genres: ["upbeat-funk", "pop", "disco", "indie-pop"]
+    evening:
+      mood_name: "Sunset Serenade"
+      description: "Golden hour synthwave, warm r&b, and coastal indie"
+      target_energy: 0.62
+      target_valence: 0.75
+      preferred_genres: ["synthwave", "r&b", "indie-pop"]
+    night:
+      mood_name: "Starlight Drift"
+      description: "Cosmic synthwave, chillwave, and dreamy midnight beats"
+      target_energy: 0.38
+      target_valence: 0.55
+      preferred_genres: ["synthwave", "chillwave", "dream-pop"]
+
+  Clouds:
+    early_morning:
+      mood_name: "Silver Dawn"
+      description: "Soft reflective melodies under gentle grey skies"
+      target_energy: 0.32
+      target_valence: 0.45
+      preferred_genres: ["ambient", "indie-folk", "lofi"]
+    morning:
+      mood_name: "Grey Sky Flow"
+      description: "Steady instrumental and rhythmic deep focus"
+      target_energy: 0.50
+      target_valence: 0.52
+      preferred_genres: ["lofi", "deep-focus", "instrumental"]
+    afternoon:
+      mood_name: "Subdued Rhythm"
+      description: "Thoughtful alternative, chill electronic, and modern indie"
+      target_energy: 0.55
+      target_valence: 0.58
+      preferred_genres: ["indie", "electronic", "trip-hop"]
+    evening:
+      mood_name: "Twilight Cloudscape"
+      description: "Atmospheric textures and smooth bass"
+      target_energy: 0.46
+      target_valence: 0.48
+      preferred_genres: ["downtempo", "indie", "synthwave"]
+    night:
+      mood_name: "Nocturnal Thoughts"
+      description: "Introspective piano and midnight chill"
+      target_energy: 0.22
+      target_valence: 0.35
+      preferred_genres: ["neo-classical", "ambient", "lofi"]
+
+  Thunderstorm:
+    early_morning:
+      mood_name: "Electric Dawn"
+      description: "Tense atmospheric electronics and distant thunder"
+      target_energy: 0.60
+      target_valence: 0.30
+      preferred_genres: ["electronic", "industrial", "ambient"]
+    morning:
+      mood_name: "Surge & Charge"
+      description: "Driving beats and dark synths amidst the storm"
+      target_energy: 0.75
+      target_valence: 0.40
+      preferred_genres: ["synthwave", "electronic", "industrial"]
+    afternoon:
+      mood_name: "Thunderous Drive"
+      description: "High-octane bass and cinematic intensity"
+      target_energy: 0.88
+      target_valence: 0.35
+      preferred_genres: ["industrial", "electronic", "dark-synthwave"]
+    evening:
+      mood_name: "Lightning Flashback"
+      description: "Darkwave, driving synth rhythm, and moody vocals"
+      target_energy: 0.72
+      target_valence: 0.42
+      preferred_genres: ["synthwave", "darkwave", "trip-hop"]
+    night:
+      mood_name: "Gothic Storm Haven"
+      description: "Sub-bass rumbles, dark ambient, and hypnotic loops"
+      target_energy: 0.40
+      target_valence: 0.25
+      preferred_genres: ["ambient", "trip-hop", "industrial"]
+
+  Snow:
+    early_morning:
+      mood_name: "First Snow Silence"
+      description: "Pristine acoustic stillness and gentle piano"
+      target_energy: 0.20
+      target_valence: 0.40
+      preferred_genres: ["neo-classical", "acoustic", "ambient"]
+    morning:
+      mood_name: "Frost & Coffee"
+      description: "Crisp acoustic melodies and warm lofi"
+      target_energy: 0.38
+      target_valence: 0.55
+      preferred_genres: ["lofi", "acoustic", "indie-folk"]
+    afternoon:
+      mood_name: "Winter Glow"
+      description: "Gentle indie folk and warm analog synthesis"
+      target_energy: 0.45
+      target_valence: 0.58
+      preferred_genres: ["indie-folk", "chillwave", "lofi"]
+    evening:
+      mood_name: "Hearthside Embers"
+      description: "Cozy acoustic, soft jazz, and soothing rhythms"
+      target_energy: 0.35
+      target_valence: 0.50
+      preferred_genres: ["jazz", "acoustic", "downtempo"]
+    night:
+      mood_name: "Blizzard Slumber"
+      description: "Deep drone, snowy ambient, and peaceful hush"
+      target_energy: 0.15
+      target_valence: 0.30
+      preferred_genres: ["ambient", "neo-classical", "lofi"]
+
+  # Fallback for any unmapped condition (e.g., Mist, Fog, Haze, Dust)
+  Default:
+    early_morning:
+      mood_name: "Quiet Horizons"
+      description: "Balanced morning acoustic and peaceful calm"
+      target_energy: 0.35
+      target_valence: 0.50
+      preferred_genres: ["acoustic", "ambient", "lofi"]
+    morning:
+      mood_name: "Balanced Flow"
+      description: "Steady focus and melodic clarity"
+      target_energy: 0.55
+      target_valence: 0.60
+      preferred_genres: ["lofi", "indie", "electronic"]
+    afternoon:
+      mood_name: "Midday Pulse"
+      description: "Energetic grooves and uplifting rhythm"
+      target_energy: 0.65
+      target_valence: 0.65
+      preferred_genres: ["indie-pop", "electronic", "upbeat-funk"]
+    evening:
+      mood_name: "Evening Unwind"
+      description: "Warm sunset tones and relaxing vibes"
+      target_energy: 0.48
+      target_valence: 0.55
+      preferred_genres: ["synthwave", "r&b", "downtempo"]
+    night:
+      mood_name: "Night Reverie"
+      description: "Soothing nighttime electronics and gentle jazz"
+      target_energy: 0.25
+      target_valence: 0.40
+      preferred_genres: ["ambient", "lofi", "jazz"]

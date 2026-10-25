@@ -1,0 +1,34 @@
+{
+  "description": "Decoupled DOM selectors for Spotify Web Player RPA automation",
+  "auth": {
+    "user_profile_widget": "button[data-testid='user-widget-link'], figure[data-testid='user-widget-avatar'], button[aria-label*='Profile'], button[data-testid='profile-menu-button']",
+    "login_button": "button[data-testid='login-button'], a[href*='/login'], button:has-text('Log in')",
+    "cookie_banner_accept": "#onetrust-accept-btn-handler, button:has-text('Accept Cookies'), button:has-text('Accept')"
+  },
+  "playlist_view": {
+    "title_heading": "h1[data-testid='entityTitle'], h1[dir='auto']",
+    "description": "div[data-testid='entity-description'], p[data-encore-id='type']",
+    "edit_details_trigger": "button[data-testid='edit-details-button'], button[aria-label*='Edit details']",
+    "edit_name_input": "input[data-testid='playlist-edit-details-name-input']",
+    "edit_description_textarea": "textarea[data-testid='playlist-edit-details-description-input']",
+    "edit_save_button": "button[data-testid='playlist-edit-details-save-button']",
+    "tracklist_row": "div[data-testid='tracklist-row']",
+    "track_title_link": "a[data-testid='internal-track-link']",
+    "track_row_more_button": "button[data-testid='more-button'], button[aria-label*='More options']",
+    "context_menu_remove": "button[role='menuitem']:has-text('Remove from this playlist'), div[role='menuitem']:has-text('Remove')",
+    "in_playlist_search_box": "input[data-testid='playlist-search-input'], input[role='searchbox'], input[placeholder*='Let\\'s find something']",
+    "in_playlist_add_button": "button[data-testid='add-to-playlist-button'], button:has-text('Add')"
+  },
+  "global_search": {
+    "search_nav_button": "a[href='/search'], button[aria-label='Search']",
+    "search_input": "input[data-testid='search-input'], input[role='searchbox']",
+    "search_result_track_row": "div[data-testid='tracklist-row']",
+    "search_track_more_button": "button[data-testid='more-button'], button[aria-label*='More options']",
+    "context_menu_add_to_playlist": "button[role='menuitem']:has-text('Add to playlist'), div[role='menuitem']:has-text('Add to playlist')",
+    "context_menu_playlist_name_target": "button[role='menuitem']:has-text('{playlist_name}'), div[role='menuitem']:has-text('{playlist_name}')"
+  },
+  "dialogs": {
+    "confirm_modal_button": "button[data-testid='confirm-button'], button:has-text('Remove'), button:has-text('Confirm')",
+    "close_modal_button": "button[aria-label='Close'], button[data-testid='modal-close']"
+  }
+}
