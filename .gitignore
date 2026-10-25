@@ -10,7 +10,9 @@ browser_profile/
 logs/
 *.log
 
-# Environments
+# Environments & Secrets
+.env
+.env.*
 .venv/
 venv/
 ENV/

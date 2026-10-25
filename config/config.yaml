@@ -4,14 +4,14 @@
 weather_api:
   # Provider: "open-meteo" (Free, real-time live global weather, NO API KEY NEEDED)
   # or "openweathermap" (Requires API key from openweathermap.org)
-  provider: "open-meteo"
+  provider: "openweathermap"
   # Automatically detects your geographic coordinates and city via public IP
   auto_detect_location: true
   # OpenWeatherMap API Key (optional, can also be set via OPENWEATHER_API_KEY env var)
   api_key: ""
-  lat: -5.0060
-  lon: 119.5730
-  city_name: "Maros/Makassar"
+  lat: -5.1516
+  lon: 119.4378
+  city_name: "Makassar"
   units: "metric"  # "metric" (Celsius) or "imperial" (Fahrenheit)
   timeout_seconds: 8
   mock_fallback: true
@@ -70,15 +70,22 @@ notifications:
 
 telegram:
   # Enable Telegram remote control and rebuild alerts
-  enabled: false
+  enabled: true
   # Telegram Bot Token obtained from @BotFather (e.g. "123456789:ABCdefGHIjklmNOPqrsTUVwxyz")
-  # Can also be set via TELEGRAM_BOT_TOKEN environment variable.
+  # Can also be set via TELEGRAM_BOT_TOKEN environment variable or .env file.
   bot_token: ""
   # Whitelist of allowed Telegram Chat IDs (e.g. [123456789])
   # When empty, send /start to your bot in Telegram to receive your Chat ID.
-  allowed_chat_ids: []
+  allowed_chat_ids: [8789029147]
   # Automatically send a Telegram summary message when scheduled background rebuild occurs
   notify_on_rebuild: true
+
+spotify_api:
+  # Spotify Developer Credentials for Method 3 track importing
+  # Create an app at https://developer.spotify.com/dashboard to get Client ID & Secret
+  # Can also be set via SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET environment variables or .env file.
+  client_id: ""
+  client_secret: ""
 
 # Weather & Time -> Mood Mapping Rules
 # Evaluates local weather condition + time block to compute target musical parameters

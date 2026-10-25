@@ -314,37 +314,62 @@ class PlaywrightRPAExecutor:
         # If neither is definitively visible, check page content
         return "login" not in page.url.lower()
 
-    def _clear_existing_tracks(self, page: Page, max_to_remove: int = 40) -> int:
+    def _get_existing_track_titles(self, page: Page) -> set:
         """
-        Removes previous tracks from the playlist for 'replace' mode.
+        Inspects the target playlist grid and collects all existing track titles (lowercased)
+        to prevent duplicate additions.
         """
-        self.logger.info("Clearing previous tracks for 'replace' mode...")
-        removed = 0
-        more_btn_sel = self.selectors["playlist_view"]["track_row_more_button"]
-        remove_item_sel = self.selectors["playlist_view"]["context_menu_remove"]
+        existing = set()
+        grid_sel = self.selectors["playlist_view"].get("playlist_tracklist_grid", "div[data-testid='playlist-tracklist']")
+        try:
+            grid = page.locator(grid_sel).first
+            if grid.is_visible(timeout=4000):
+                link_locators = grid.locator("a[data-testid='internal-track-link']").all()
+                for l in link_locators:
+                    try:
+                        text = l.inner_text(timeout=500).strip().lower()
+                        if text:
+                            existing.add(text)
+                    except Exception:
+                        pass
+        except Exception as exc:
+            self.logger.debug("Could not inspect existing playlist tracks: %s", exc)
+        return existing
 
-        for _ in range(max_to_remove):
-            row = page.locator("div[data-testid='tracklist-row']").first
-            if not row.is_visible(timeout=1500):
-                break
+    def _clear_existing_tracks(self, page: Page, max_to_remove: int = 60) -> int:
+        """
+        Removes previous tracks from the playlist for 'replace' mode or clear command.
+        Uses fast, verified keyboard Delete on playlist-tracklist rows.
+        """
+        self.logger.info("Clearing previous tracks from target playlist...")
+        removed = 0
+
+        grid_sel = self.selectors["playlist_view"].get("playlist_tracklist_grid", "div[data-testid='playlist-tracklist']")
+
+        # Wait for playlist content to hydrate
+        try:
+            page.wait_for_selector(f"{grid_sel}, h1", timeout=15000)
+            time.sleep(1.0)
+        except Exception:
+            pass
+
+        grid = page.locator(grid_sel).first
+        if not grid.is_visible(timeout=3000):
+            self.logger.info("Playlist grid has 0 tracks (already clean).")
+            return 0
+
+        # Rapidly click first row and press Delete key until playlist grid is cleared
+        for step in range(max_to_remove):
             try:
-                row.hover()
-                more_btn = row.locator(more_btn_sel).first
-                if more_btn.is_visible(timeout=1500):
-                    more_btn.click(force=True)
-                    time.sleep(0.3)
-                    remove_item = page.locator(remove_item_sel).first
-                    if remove_item.is_visible(timeout=1500):
-                        remove_item.click(force=True)
-                        removed += 1
-                        time.sleep(0.3)
-                    else:
-                        page.keyboard.press("Escape")
-                        break
-                else:
+                row = grid.locator("div[data-testid='tracklist-row']").first
+                if not row.is_visible(timeout=1000):
                     break
-            except Exception:
-                page.keyboard.press("Escape")
+                row.click(timeout=1000)
+                page.keyboard.press("Delete")
+                removed += 1
+                time.sleep(0.2)
+            except Exception as exc:
+                self.logger.debug("Row clear finished or stopped at step %d: %s", step, exc)
                 break
 
         self.logger.info("Cleared %d previous tracks from playlist.", removed)
@@ -353,9 +378,9 @@ class PlaywrightRPAExecutor:
     def _sync_tracks_to_playlist(self, page: Page, tracks: List[Any]) -> int:
         """
         Injects curated tracks directly into the Spotify playlist using the verified in-playlist search box.
+        Enforces strict multi-layered deduplication to prevent tracks from ever being doubled.
         """
         in_search_sel = self.selectors["playlist_view"]["in_playlist_search_box"]
-        add_btn_sel = self.selectors["playlist_view"]["in_playlist_add_button"]
 
         added_count = 0
 
@@ -371,7 +396,7 @@ class PlaywrightRPAExecutor:
             close_btn = page.locator('button[aria-label="Close"]').first
             if close_btn.is_visible(timeout=1000):
                 close_btn.click()
-                time.sleep(1.0)
+                time.sleep(0.5)
         except Exception:
             pass
 
@@ -379,6 +404,10 @@ class PlaywrightRPAExecutor:
         sync_mode = self.playlist_cfg.get("sync_mode", "append")
         if sync_mode == "replace":
             self._clear_existing_tracks(page)
+
+        # Scan existing tracks in playlist to prevent duplicate additions
+        existing_titles = self._get_existing_track_titles(page)
+        self.logger.info("Playlist currently has %d unique tracks before injection.", len(existing_titles))
 
         # If search input is not visible, check for 'Find more' button and click it to reveal search
         search_input_locator = page.locator(in_search_sel).first
@@ -400,18 +429,71 @@ class PlaywrightRPAExecutor:
 
                 for idx, trk in enumerate(tracks, 1):
                     query = getattr(trk, "search_query", f"{trk.artist} - {trk.title}")
-                    try:
-                        search_input.fill("")
-                        search_input.fill(query)
-                        time.sleep(1.0)
+                    track_title = trk.title.strip().lower()
 
-                        # Locate the track-specific Add button in the search result row
-                        add_btn = page.locator(add_btn_sel).first
-                        if add_btn.is_visible(timeout=4000):
-                            add_btn.click(force=True)
-                            added_count += 1
-                            self.logger.info("  [%02d/%02d] Added: %s", idx, len(tracks), query)
-                            time.sleep(0.6)
+                    # Deduplication guard: Skip if already present in the playlist
+                    if track_title in existing_titles or any(track_title in et for et in existing_titles):
+                        self.logger.info("  [%02d/%02d] Skipped duplicate: '%s' is already in playlist.", idx, len(tracks), trk.title)
+                        continue
+
+                    try:
+                        # 1. Direct clear of in-playlist search box
+                        search_input.fill("")
+                        time.sleep(0.2)
+
+                        # 2. Enter new track query
+                        search_input.fill(query)
+                        time.sleep(1.2)
+
+                        # 3. Locate verified Add button strictly in search results matching title or artist
+                        target_row = None
+
+                        # Scoped strictly to search result rows containing an Add button (never playlist grid or recommendations)
+                        scoped_title_selector = f"div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button']):has-text('{trk.title}')"
+                        try:
+                            matching_row = page.locator(scoped_title_selector).first
+                            if matching_row.is_visible(timeout=2500):
+                                target_row = matching_row
+                        except Exception:
+                            pass
+
+                        # Secondary match: by artist name if title has variant spelling or remaster tag
+                        if not target_row:
+                            try:
+                                scoped_artist_selector = f"div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button']):has-text('{trk.artist}')"
+                                matching_artist_row = page.locator(scoped_artist_selector).first
+                                if matching_artist_row.is_visible(timeout=1500):
+                                    target_row = matching_artist_row
+                            except Exception:
+                                pass
+
+                        # Fallback: check first search result row, BUT ensure it isn't a duplicate of already added tracks
+                        if not target_row:
+                            try:
+                                first_row = page.locator("div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button'])").first
+                                if first_row.is_visible(timeout=1500):
+                                    row_text = first_row.inner_text().lower()
+                                    if not any(et in row_text for et in existing_titles):
+                                        target_row = first_row
+                                    else:
+                                        self.logger.warning("  [%02d/%02d] Search result contains already-added track. Skipping fallback to avoid duplicate.", idx, len(tracks))
+                            except Exception:
+                                pass
+
+                        if target_row:
+                            btn = target_row.locator("button[data-testid='add-to-playlist-button']").first
+                            if btn.is_visible():
+                                btn.click(force=True)
+                                added_count += 1
+                                existing_titles.add(track_title)
+                                try:
+                                    row_title = target_row.locator("a[data-testid='internal-track-link']").first.inner_text(timeout=500).strip().lower()
+                                    if row_title:
+                                        existing_titles.add(row_title)
+                                except Exception:
+                                    pass
+                                self.logger.info("  [%02d/%02d] Added: %s", idx, len(tracks), query)
+                                time.sleep(0.6)
                         else:
                             self.logger.warning("  [%02d/%02d] Add button not found for: %s", idx, len(tracks), query)
                     except Exception as trk_err:

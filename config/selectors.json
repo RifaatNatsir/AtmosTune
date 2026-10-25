@@ -12,6 +12,7 @@
     "edit_name_input": "input[data-testid='playlist-edit-details-name-input']",
     "edit_description_textarea": "textarea[data-testid='playlist-edit-details-description-input']",
     "edit_save_button": "button[data-testid='playlist-edit-details-save-button']",
+    "playlist_tracklist_grid": "div[data-testid='playlist-tracklist']",
     "tracklist_row": "div[data-testid='tracklist-row']",
     "track_title_link": "a[data-testid='internal-track-link']",
     "track_row_more_button": "button[data-testid='more-button'], button[aria-label*='More options']",

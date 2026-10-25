@@ -220,6 +220,16 @@ Clears all tracks from the Spotify playlist:
 python main.py --clear
 ```
 
+### Import Tracks via Spotify Developer API (Method 3)
+Import tracks and their official audio metrics (`energy`, `valence`, `tempo_bpm`) directly into `data/tracks_db.json`:
+```bash
+# Basic import (first 50 tracks from any public playlist or album)
+python main.py --import-spotify "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
+
+# Import with genre override and custom atmospheric weather tags
+python main.py --import-spotify "https://open.spotify.com/playlist/..." --import-genre "lofi" --import-tags "rain,night,cozy" --import-limit 50
+```
+
 ### Launch Telegram Bot Listener
 Runs the interactive Telegram remote controller daemon:
 ```bash

@@ -28,8 +28,28 @@ from src.rpa_executor import PlaywrightRPAExecutor, AuthenticationRequiredError
 from src.notifier import AtmosNotifier, setup_logger
 
 
+def load_dotenv_if_present(env_path: Path = Path(".env")) -> None:
+    """Lightweight .env file loader without external dependencies."""
+    if not env_path.exists():
+        return
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip("'\"")
+                if k and k not in os.environ:
+                    os.environ[k] = v
+    except Exception:
+        pass
+
+
 def load_yaml_config(config_path: Path) -> Dict[str, Any]:
     """Loads and validates configuration file."""
+    load_dotenv_if_present()
     if not config_path.exists():
         print(f"Error: Configuration file not found at {config_path}")
         sys.exit(1)
@@ -361,6 +381,43 @@ def main() -> int:
         help="Launch interactive Telegram Bot remote controller listener.",
     )
     parser.add_argument(
+        "--import-spotify",
+        type=str,
+        default=None,
+        metavar="URL_OR_ID",
+        help="Import tracks from Spotify playlist/album URL using Spotify Developer API audio features.",
+    )
+    parser.add_argument(
+        "--import-genre",
+        type=str,
+        default=None,
+        help="Optional genre override for imported tracks (e.g. 'lofi', 'ambient', 'synthwave').",
+    )
+    parser.add_argument(
+        "--import-tags",
+        type=str,
+        default=None,
+        help="Optional comma-separated atmospheric tags (e.g. 'rain,night,chill').",
+    )
+    parser.add_argument(
+        "--import-limit",
+        type=int,
+        default=50,
+        help="Maximum tracks to import from playlist (default: 50).",
+    )
+    parser.add_argument(
+        "--import-energy",
+        type=float,
+        default=None,
+        help="Optional target energy override (0.0 to 1.0) for imported tracks.",
+    )
+    parser.add_argument(
+        "--import-valence",
+        type=float,
+        default=None,
+        help="Optional target valence override (0.0 to 1.0) for imported tracks.",
+    )
+    parser.add_argument(
         "--config",
         type=str,
         default="./config/config.yaml",
@@ -437,7 +494,40 @@ def main() -> int:
             logger.critical("Telegram bot crashed: %s", exc)
             return 1
 
-    # 4. Standard Run-and-Kill Execution Cycle
+    # 4. Spotify Web API Track Importer Mode
+    if args.import_spotify:
+        from src.spotify_importer import SpotifyImporter, SpotifyAPIError
+        spotify_cfg = config.get("spotify_api", {})
+        importer = SpotifyImporter(
+            client_id=spotify_cfg.get("client_id"),
+            client_secret=spotify_cfg.get("client_secret"),
+            db_path="./data/tracks_db.json",
+            logger=logger,
+        )
+        custom_tags = [t.strip() for t in args.import_tags.split(",")] if args.import_tags else None
+        try:
+            res = importer.import_from_url(
+                url_or_id=args.import_spotify,
+                limit=args.import_limit,
+                genre_override=args.import_genre,
+                custom_tags=custom_tags,
+                energy_override=args.import_energy,
+                valence_override=args.import_valence,
+            )
+            if res.get("success"):
+                print(f"\n[+] Import complete! Added {res['added_count']} new tracks (skipped {res['skipped_count']} duplicates). Total in DB: {res['total_in_db']}")
+                return 0
+            else:
+                print(f"\n[-] Import failed: {res.get('message')}")
+                return 1
+        except SpotifyAPIError as api_err:
+            print(f"\n[!] Spotify API Error: {api_err}")
+            return 1
+        except Exception as exc:
+            print(f"\n[!] Import Error: {exc}")
+            return 1
+
+    # 5. Standard Run-and-Kill Execution Cycle
     try:
         res = run_atmostune_cycle(
             config=config,

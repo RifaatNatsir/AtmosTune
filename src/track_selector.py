@@ -211,9 +211,17 @@ class SmartTrackSelector:
                 current_time=now,
             )
 
-        # Sort candidate pool descending by composite fitness score
+        # Sort candidate pool descending by composite fitness score with strict deduplication
         pool = sorted(self.tracks, key=lambda t: t.calculated_score, reverse=True)
-        top_candidates = pool[:target_count]
+        top_candidates: List[Track] = []
+        seen_titles = set()
+        for trk in pool:
+            norm_title = f"{trk.artist.lower()} - {trk.title.lower()}"
+            if norm_title not in seen_titles:
+                seen_titles.add(norm_title)
+                top_candidates.append(trk)
+            if len(top_candidates) >= target_count:
+                break
 
         # Sequence tracks along an intentional energy progression curve
         curve_type = self.playlist_cfg.get("curve_type", "bell_curve")
