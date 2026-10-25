@@ -105,25 +105,46 @@ python main.py --auth
 
 Edit `config/config.yaml` to customize your environment:
 
-### Weather API Settings
+### Weather Provider (100% Free Live Global Weather)
+AtmosTune includes built-in auto-geolocation via IP and **Open-Meteo** API integration. It works out-of-the-box without registering or configuring any API keys!
+
 ```yaml
 weather_api:
-  # Get a free key at https://openweathermap.org/api
-  # Can also be exported as environment variable: export OPENWEATHER_API_KEY="your_key"
+  # Provider: "open-meteo" (Free live global weather, NO API KEY REQUIRED)
+  # or "openweathermap" (Requires free api_key from openweathermap.org)
+  provider: "open-meteo"
+  # Automatically detects your geographic coordinates and city via public IP
+  auto_detect_location: true
   api_key: ""
-  lat: 40.7128          # Your latitude
-  lon: -74.0060         # Your longitude
-  city_name: "New York"
+  lat: -5.0060          # Fallback coordinates
+  lon: 119.5730
+  city_name: "Maros/Makassar"
   units: "metric"       # "metric" (°C) or "imperial" (°F)
-  mock_fallback: true   # If key is empty, generates realistic diurnal physics simulation
+  timeout_seconds: 8
+  mock_fallback: true   # Diurnal physics simulation if totally offline
+```
+
+### Telegram Remote Controller Configuration
+Control your playlist, trigger rebuilds, or check weather directly from Telegram:
+
+```yaml
+telegram:
+  enabled: true
+  # Obtain your token from @BotFather on Telegram (or export TELEGRAM_BOT_TOKEN)
+  bot_token: "YOUR_TELEGRAM_BOT_TOKEN"
+  # Whitelist of Telegram Chat IDs permitted to control AtmosTune (e.g. [123456789])
+  # When empty, send /start to your bot to view your Chat ID!
+  allowed_chat_ids: []
+  notify_on_rebuild: true  # Broadcast alert whenever automated background rebuild succeeds
 ```
 
 ### Target Playlist
 ```yaml
 playlist:
-  # Paste the full URL of your target Spotify playlist
-  target_playlist_url: "https://open.spotify.com/playlist/YOUR_PLAYLIST_ID_HERE"
-  max_tracks: 10
+  target_playlist_url: "https://open.spotify.com/playlist/5qvujTFIG3TgSfgT5b8qqa"
+  playlist_name_prefix: "AtmosTune • "
+  max_tracks: 20
+  sync_mode: "replace"      # "replace" (clears old tracks) or "append"
   curve_type: "bell_curve"  # "bell_curve", "ascending", or "steady"
 ```
 
@@ -136,10 +157,47 @@ scheduling:
 
 ---
 
-## 6. CLI Usage & Testing
+## 6. Telegram Bot Remote Controller 📱
+
+AtmosTune includes a companion Telegram Bot that lets you monitor and control your Spotify playlist from anywhere in the world on your phone or desktop.
+
+### Setup Guide in 3 Steps:
+
+1. **Create your Bot Token:**
+   - Open Telegram and search for `@BotFather`.
+   - Send `/newbot`, name your bot (e.g. `MyAtmosTuneBot`), and copy the HTTP API Token.
+   - Paste the token into `config/config.yaml` under `telegram.bot_token:` (or set `export TELEGRAM_BOT_TOKEN="token"`).
+
+2. **Start the Bot Listener:**
+   - Double-click `run_telegram_bot.bat` or run:
+     ```bash
+     python main.py --telegram
+     ```
+
+3. **Authorize Your Account:**
+   - Open Telegram, find your bot, and send `/start`.
+   - The bot will greet you and display your unique **Chat ID** (e.g. `123456789`).
+   - Add this number to `config/config.yaml` under `telegram.allowed_chat_ids: [123456789]` to lock down access so only you can control the playlist.
+
+### Telegram Controls & Interactive Dashboard
+
+The bot provides an interactive inline keyboard and slash commands:
+
+| Command / Button | Action |
+| :--- | :--- |
+| `[🔄 Rebuild Playlist]` (`/rebuild`) | Triggers headless Playwright RPA to rebuild your Spotify playlist for current live weather in <30s. |
+| `[🌦️ Real Weather]` (`/weather`) | Displays live meteorological readings (temperature, feels like, humidity, conditions, diurnal block). |
+| `[🎵 Preview Tracks]` (`/preview`) | Preview next curated tracks and energy scores without touching Spotify. |
+| `[📊 System Status]` (`/status`) | Displays last run timestamp, execution count, active mood, and track count. |
+| `[🎨 Choose Mood]` (`/mood <name>`) | Force a specific mood override (e.g. *Chill Twilight*, *Rainy Day Focus*, *Morning Acoustic Rise*). |
+| `[🗑️ Clear Playlist]` (`/clear`) | Confirms and empties all tracks from the target playlist on demand. |
+
+---
+
+## 7. CLI Usage & Testing
 
 ### Test with Dry-Run
-Evaluates local weather, diurnal block, selects tracks, and prints the Bell-Curve energy scores without touching Playwright or mutating any playlist:
+Evaluates real local weather, diurnal block, selects tracks, and prints the Bell-Curve energy scores without touching Playwright or mutating any playlist:
 ```bash
 python main.py --dry-run
 ```
@@ -148,6 +206,24 @@ python main.py --dry-run
 Bypasses the cooldown timer and state comparisons to execute an instant rebuild:
 ```bash
 python main.py --force
+```
+
+### Force a Specific Mood
+Rebuilds the playlist with an explicit target mood:
+```bash
+python main.py --mood "Chill Twilight" --force
+```
+
+### Clear Playlist Tracks On Demand
+Clears all tracks from the Spotify playlist:
+```bash
+python main.py --clear
+```
+
+### Launch Telegram Bot Listener
+Runs the interactive Telegram remote controller daemon:
+```bash
+python main.py --telegram
 ```
 
 ### Normal Automated Execution (Run-and-Kill)

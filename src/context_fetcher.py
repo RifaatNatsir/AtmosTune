@@ -51,6 +51,15 @@ class ContextFetcher:
         self.sched_cfg = config.get("scheduling", {})
         self.mood_matrix = config.get("mood_matrix", {})
 
+        # Setup persistent HTTP session with retry policy
+        self.session = requests.Session()
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+        retries = Retry(total=3, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retries)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
+
     def get_time_block(self, current_time: Optional[datetime] = None) -> Tuple[str, int]:
         """
         Maps a datetime hour into semantic time blocks.
@@ -75,19 +84,154 @@ class ContextFetcher:
 
         return "night", hour
 
-    def fetch_weather(self) -> Dict[str, Any]:
+    WMO_CODE_MAP = {
+        0: ("Clear", "clear sky"),
+        1: ("Clear", "mainly clear"),
+        2: ("Clouds", "partly cloudy"),
+        3: ("Clouds", "overcast"),
+        45: ("Mist", "foggy"),
+        48: ("Mist", "depositing rime fog"),
+        51: ("Drizzle", "light drizzle"),
+        53: ("Drizzle", "moderate drizzle"),
+        55: ("Drizzle", "dense drizzle"),
+        56: ("Drizzle", "light freezing drizzle"),
+        57: ("Drizzle", "dense freezing drizzle"),
+        61: ("Rain", "slight rain"),
+        63: ("Rain", "moderate rain"),
+        65: ("Rain", "heavy rain"),
+        66: ("Rain", "light freezing rain"),
+        67: ("Rain", "heavy freezing rain"),
+        71: ("Snow", "slight snow fall"),
+        73: ("Snow", "moderate snow fall"),
+        75: ("Snow", "heavy snow fall"),
+        77: ("Snow", "snow grains"),
+        80: ("Rain", "slight rain showers"),
+        81: ("Rain", "moderate rain showers"),
+        82: ("Rain", "violent rain showers"),
+        85: ("Snow", "slight snow showers"),
+        86: ("Snow", "heavy snow showers"),
+        95: ("Thunderstorm", "thunderstorm"),
+        96: ("Thunderstorm", "thunderstorm with slight hail"),
+        99: ("Thunderstorm", "thunderstorm with heavy hail"),
+    }
+
+    def _detect_location(self) -> Tuple[float, float, str]:
         """
-        Retrieves live weather data from OpenWeatherMap API.
-        Falls back to intelligent mock simulation if API key is not present or network fails.
+        Detects real-world geographic coordinates and city name based on public IP.
+        Falls back to coordinates in config.yaml if network/geolocation services are unreachable.
         """
-        api_key = os.getenv("OPENWEATHER_API_KEY", self.weather_cfg.get("api_key", "")).strip()
-        lat = self.weather_cfg.get("lat", 40.7128)
-        lon = self.weather_cfg.get("lon", -74.0060)
-        units = self.weather_cfg.get("units", "metric")
-        city_name = self.weather_cfg.get("city_name", "Local Station")
+        cfg_lat = float(self.weather_cfg.get("lat", -5.006))
+        cfg_lon = float(self.weather_cfg.get("lon", 119.573))
+        cfg_city = self.weather_cfg.get("city_name", "Local Station")
+
+        if not self.weather_cfg.get("auto_detect_location", True):
+            return cfg_lat, cfg_lon, cfg_city
+
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
         timeout = self.weather_cfg.get("timeout_seconds", 5)
 
-        if api_key and api_key != "YOUR_OPENWEATHER_API_KEY":
+        # Provider 1: freeipapi.com
+        try:
+            resp = self.session.get("https://freeipapi.com/api/json", headers=headers, timeout=timeout)
+            if resp.status_code == 200:
+                data = resp.json()
+                lat = float(data.get("latitude", cfg_lat))
+                lon = float(data.get("longitude", cfg_lon))
+                city = data.get("cityName") or data.get("regionName") or cfg_city
+                country = data.get("countryName", "")
+                display_city = f"{city}, {country}".strip(", ")
+                self.logger.info("Auto-detected location via IP: %s (%.4f, %.4f)", display_city, lat, lon)
+                return lat, lon, display_city
+        except Exception as exc:
+            self.logger.debug("freeipapi lookup failed: %s. Trying secondary IP locator...", exc)
+
+        # Provider 2: ipwho.is
+        try:
+            resp = self.session.get("https://ipwho.is/", headers=headers, timeout=timeout)
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("success", False):
+                    lat = float(data.get("latitude", cfg_lat))
+                    lon = float(data.get("longitude", cfg_lon))
+                    city = data.get("city") or data.get("region") or cfg_city
+                    country = data.get("country", "")
+                    display_city = f"{city}, {country}".strip(", ")
+                    self.logger.info("Auto-detected location via ipwho.is: %s (%.4f, %.4f)", display_city, lat, lon)
+                    return lat, lon, display_city
+        except Exception as exc:
+            self.logger.debug("ipwho.is lookup failed: %s", exc)
+
+        self.logger.info("Using configured static coordinates: %s (%.4f, %.4f)", cfg_city, cfg_lat, cfg_lon)
+        return cfg_lat, cfg_lon, cfg_city
+
+    def _fetch_open_meteo(self, lat: float, lon: float, city_name: str, units: str) -> Dict[str, Any]:
+        """
+        Retrieves real-time weather from Open-Meteo free API (No API Key Required).
+        """
+        timeout = self.weather_cfg.get("timeout_seconds", 8)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        url = (
+            f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+            "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m"
+        )
+        self.logger.info("Querying Open-Meteo live weather for %s (%.4f, %.4f)...", city_name, lat, lon)
+        response = self.session.get(url, headers=headers, timeout=timeout)
+        response.raise_for_status()
+        data = response.json()
+
+        current = data.get("current", {})
+        code = current.get("weather_code", 0)
+        condition, condition_desc = self.WMO_CODE_MAP.get(code, ("Clear", "clear sky"))
+
+        temp_c = float(current.get("temperature_2m", 20.0))
+        feels_c = float(current.get("apparent_temperature", temp_c))
+        humidity = int(current.get("relative_humidity_2m", 50))
+        wind_kmh = float(current.get("wind_speed_10m", 10.0))
+        wind_ms = round(wind_kmh / 3.6, 1)
+
+        temp = temp_c if units == "metric" else (temp_c * 9 / 5) + 32
+        feels_like = feels_c if units == "metric" else (feels_c * 9 / 5) + 32
+
+        self.logger.info(
+            "Live Open-Meteo context: %s | %.1f°%s (feels %.1f°%s) | %s (%s)",
+            city_name,
+            temp,
+            "C" if units == "metric" else "F",
+            feels_like,
+            "C" if units == "metric" else "F",
+            condition,
+            condition_desc,
+        )
+
+        return {
+            "condition": condition,
+            "condition_description": condition_desc,
+            "temperature": round(temp, 1),
+            "feels_like": round(feels_like, 1),
+            "humidity": humidity,
+            "wind_speed": wind_ms,
+            "city_name": city_name,
+            "is_mock": False,
+        }
+
+    def fetch_weather(self) -> Dict[str, Any]:
+        """
+        Retrieves live real-time weather data.
+        Hierarchy:
+        1. OpenWeatherMap (if valid API key configured).
+        2. Open-Meteo (100% free, real-time live global weather, no API key required).
+        3. Realistic diurnal + seasonal mock generator fallback (if offline).
+        """
+        api_key = os.getenv("OPENWEATHER_API_KEY", self.weather_cfg.get("api_key", "")).strip()
+        provider = self.weather_cfg.get("provider", "open-meteo").lower()
+        units = self.weather_cfg.get("units", "metric")
+        timeout = self.weather_cfg.get("timeout_seconds", 5)
+
+        # Detect real location or fallback to config
+        lat, lon, city_name = self._detect_location()
+
+        # 1. OpenWeatherMap (if explicitly requested with valid key)
+        if (provider == "openweathermap" or api_key) and api_key not in ("", "YOUR_OPENWEATHER_API_KEY"):
             try:
                 url = "https://api.openweathermap.org/data/2.5/weather"
                 params = {
@@ -96,7 +240,7 @@ class ContextFetcher:
                     "appid": api_key,
                     "units": units,
                 }
-                self.logger.info("Querying OpenWeatherMap API for lat=%.4f, lon=%.4f...", lat, lon)
+                self.logger.info("Querying OpenWeatherMap API for %s (lat=%.4f, lon=%.4f)...", city_name, lat, lon)
                 response = requests.get(url, params=params, timeout=timeout)
                 response.raise_for_status()
                 data = response.json()
@@ -120,13 +264,19 @@ class ContextFetcher:
                     "is_mock": False,
                 }
             except Exception as exc:
-                self.logger.warning("OpenWeatherMap request failed (%s). Evaluating fallback...", exc)
+                self.logger.warning("OpenWeatherMap request failed (%s). Attempting Open-Meteo...", exc)
 
-        # Realistic diurnal + seasonal mock generator
+        # 2. Open-Meteo (Default live provider: Free, accurate, global, no API key needed)
+        try:
+            return self._fetch_open_meteo(lat=lat, lon=lon, city_name=city_name, units=units)
+        except Exception as exc:
+            self.logger.warning("Open-Meteo live request failed (%s). Evaluating offline fallback...", exc)
+
+        # 3. Realistic diurnal + seasonal mock generator fallback
         if self.weather_cfg.get("mock_fallback", True):
             return self._generate_environmental_fallback(lat, lon, city_name, units)
 
-        raise RuntimeError("No valid OpenWeatherMap API key provided and mock_fallback is disabled.")
+        raise RuntimeError("Failed to retrieve live weather and mock_fallback is disabled.")
 
     def _generate_environmental_fallback(
         self, lat: float, lon: float, city_name: str, units: str

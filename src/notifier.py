@@ -72,7 +72,9 @@ class AtmosNotifier:
     def __init__(self, config: Optional[Dict[str, Any]] = None, logger: Optional[logging.Logger] = None) -> None:
         self.config = config or {}
         self.notify_cfg = self.config.get("notifications", {})
+        self.telegram_cfg = self.config.get("telegram", {})
         self.enabled = self.notify_cfg.get("enabled", True)
+        self.telegram_enabled = self.telegram_cfg.get("enabled", False)
         self.app_name = self.notify_cfg.get("app_name", "AtmosTune")
         self.timeout = self.notify_cfg.get("timeout_sec", 6)
         self.logger = logger or logging.getLogger("AtmosTune.Notifier")
@@ -124,6 +126,41 @@ class AtmosNotifier:
             self.logger.warning("Desktop notification skipped (%s)", exc)
             return False
 
+    def send_telegram(self, message: str) -> bool:
+        """
+        Sends an instant notification to all authorized Telegram chat IDs via Telegram Bot API.
+        Does not require running a long-lived bot process; uses lightweight HTTP POST.
+        """
+        token = os.getenv("TELEGRAM_BOT_TOKEN", self.telegram_cfg.get("bot_token", "")).strip()
+        chat_ids = self.telegram_cfg.get("allowed_chat_ids", [])
+
+        if not token or not chat_ids:
+            return False
+
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        dispatched = 0
+
+        for chat_id in chat_ids:
+            try:
+                import requests
+                payload = {
+                    "chat_id": chat_id,
+                    "text": message,
+                    "parse_mode": "Markdown",
+                }
+                resp = requests.post(url, json=payload, timeout=5)
+                if resp.status_code == 200:
+                    dispatched += 1
+                else:
+                    self.logger.warning("Telegram notification to %s failed (HTTP %d)", chat_id, resp.status_code)
+            except Exception as exc:
+                self.logger.debug("Telegram dispatch error for chat %s: %s", chat_id, exc)
+
+        if dispatched > 0:
+            self.logger.info("Dispatched Telegram alert to %d chat(s).", dispatched)
+            return True
+        return False
+
     def notify_rebuild_success(
         self,
         mood_name: str,
@@ -132,11 +169,31 @@ class AtmosNotifier:
         time_block: str,
         track_count: int,
         lead_track: Optional[str] = None,
+        playlist_url: Optional[str] = None,
     ) -> bool:
-        """Helper to send a formatted atmospheric playlist refresh alert."""
+        """Helper to send a formatted atmospheric playlist refresh alert to Desktop and Telegram."""
         title = f"{mood_name}"
         desc = f"Curated {track_count} tracks for {condition} at {time_block} ({temperature:+.1f}°C)."
         if lead_track:
             desc += f" Starter: {lead_track}"
 
-        return self.notify(title=title, message=desc)
+        # 1. Desktop Toast
+        toast_ok = self.notify(title=title, message=desc)
+
+        # 2. Telegram Broadcast (if enabled)
+        if self.telegram_cfg.get("notify_on_rebuild", True):
+            tg_msg = (
+                f"🎧 *AtmosTune Playlist Updated!*\n\n"
+                f"🌦️ *Atmosphere*: {condition} ({temperature:+.1f}°C)\n"
+                f"⏰ *Diurnal Block*: {time_block}\n"
+                f"🎨 *Active Mood*: *{mood_name}*\n"
+                f"🎵 *Curated*: {track_count} tracks\n"
+            )
+            if lead_track:
+                tg_msg += f"▶️ *Lead Track*: {lead_track}\n"
+            if playlist_url:
+                tg_msg += f"\n🔗 [Open Playlist on Spotify]({playlist_url})"
+
+            self.send_telegram(tg_msg)
+
+        return toast_ok

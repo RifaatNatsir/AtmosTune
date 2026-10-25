@@ -5,7 +5,8 @@ Main entry point and orchestrator implementing the Low-Memory 'Run-and-Kill' pat
 - Checks environmental context first (<20MB RAM footprint).
 - If update is unnecessary, exits immediately without launching browser.
 - If update is warranted, triggers headless Playwright (<30s runtime), clears memory,
-  saves persistent state, dispatches native OS notification, and exits cleanly.
+  saves persistent state, dispatches native OS and Telegram notifications, and exits cleanly.
+- Also provides Telegram remote control daemon via `--telegram`.
 """
 
 from __future__ import annotations
@@ -15,8 +16,9 @@ import sys
 import json
 import time
 import argparse
+import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Tuple
 
 import yaml
 
@@ -88,6 +90,228 @@ def print_banner() -> None:
     print(banner)
 
 
+def clear_playlist_tracks(
+    config: Dict[str, Any],
+    logger: Optional[logging.Logger] = None,
+) -> Dict[str, Any]:
+    """Clears all tracks from target Spotify playlist headlessly."""
+    log = logger or logging.getLogger("AtmosTune")
+    executor = PlaywrightRPAExecutor(
+        config=config,
+        selectors_path="./config/selectors.json",
+        logger=log,
+    )
+    result = executor.clear_playlist()
+
+    if result.get("success"):
+        state_path = Path("./data/state.json")
+        state = load_state(state_path)
+        state["last_playlist_tracks"] = []
+        save_state(state_path, state)
+
+    return result
+
+
+def run_atmostune_cycle(
+    config: Dict[str, Any],
+    force: bool = False,
+    dry_run: bool = False,
+    mood_override: Optional[str] = None,
+    logger: Optional[logging.Logger] = None,
+) -> Dict[str, Any]:
+    """
+    Executes a single end-to-end AtmosTune run-and-kill cycle:
+    1. Fetches environmental context.
+    2. Matches target mood (or applies mood override).
+    3. Evaluates decision engine (skips browser if conditions are static).
+    4. Selects tracks with anti-fatigue exponential decay and narrative curve.
+    5. Injects tracks into Spotify via headless Playwright.
+    6. Updates state and fires notifications.
+    """
+    log = logger or logging.getLogger("AtmosTune")
+    notifier = AtmosNotifier(config=config, logger=log)
+    state_path = Path("./data/state.json")
+    state = load_state(state_path)
+
+    log.info("Evaluating real-time atmospheric conditions...")
+    context_fetcher = ContextFetcher(config=config, logger=log)
+
+    try:
+        context: WeatherTimeContext = context_fetcher.get_current_context()
+    except Exception as exc:
+        log.critical("Failed to acquire environmental context: %s", exc)
+        return {"success": False, "error": f"Failed to acquire context: {exc}"}
+
+    matched_mood = context.matched_mood
+    if mood_override:
+        # Search for requested mood name in mood_matrix
+        found_mood = None
+        for cond, blocks in config.get("mood_matrix", {}).items():
+            if isinstance(blocks, dict):
+                for blk, mdata in blocks.items():
+                    if isinstance(mdata, dict) and mdata.get("mood_name", "").lower() == mood_override.lower():
+                        found_mood = mdata
+                        break
+            if found_mood:
+                break
+
+        if found_mood:
+            matched_mood = found_mood
+            mood_name = found_mood.get("mood_name")
+        else:
+            mood_name = mood_override
+            matched_mood = {
+                "mood_name": mood_name,
+                "description": f"Custom mood override: {mood_name}",
+                "target_energy": 0.50,
+                "target_valence": 0.50,
+                "preferred_genres": ["ambient", "indie", "electronic"],
+            }
+        log.info("Applied manual mood override: '%s'", mood_name)
+    else:
+        mood_name = matched_mood.get("mood_name", "Atmospheric Drift")
+
+    log.info(
+        "Current Context: %s (%.1f°C, %s) | Block: %s | Mood: '%s'",
+        context.city_name,
+        context.temperature,
+        context.condition,
+        context.time_block,
+        mood_name,
+    )
+
+    # Decision Engine: Check if browser invocation is necessary
+    should_run, reason = context_fetcher.should_trigger_update(
+        current_context=context,
+        state=state,
+        force=force or bool(mood_override),
+    )
+
+    if not should_run and not dry_run:
+        log.info("Decision Engine: %s", reason)
+        log.info("Execution complete. Script exiting cleanly to preserve system resources.")
+        return {
+            "success": True,
+            "skipped": True,
+            "reason": reason,
+            "mood_name": mood_name,
+            "weather": context.condition,
+            "temperature": context.temperature,
+            "time_block": context.time_block,
+        }
+
+    log.info("Decision Engine: %s [Triggering Playlist Synthesis]", reason)
+
+    # Track Selection
+    track_db_path = "./data/tracks_db.json"
+    selector = SmartTrackSelector(
+        tracks_db_path=track_db_path,
+        config=config,
+        logger=log,
+    )
+
+    curated_tracks = selector.select_tracks(
+        target_mood=matched_mood,
+        weather_condition=context.condition,
+        update_state=not dry_run,
+    )
+
+    if not curated_tracks:
+        log.warning("No suitable tracks could be selected. Aborting.")
+        return {"success": False, "error": "No tracks could be selected."}
+
+    print("\n" + "=" * 65)
+    print(f"[*] CURATED ATMOSPHERIC SOUNDTRACK: {mood_name.upper()}")
+    print(f"   Atmosphere: {context.condition} ({context.temperature:+.1f}°C) | Diurnal: {context.time_block}")
+    print(f"   Target Attributes: Energy {matched_mood.get('target_energy')}, Valence {matched_mood.get('target_valence')}")
+    print("=" * 65)
+    for i, trk in enumerate(curated_tracks, 1):
+        print(f"  {i:02d}. {trk.artist:<18} - {trk.title:<24} [E: {trk.energy:.2f} | Score: {trk.calculated_score:.3f}]")
+    print("=" * 65 + "\n")
+
+    lead_track = f"{curated_tracks[0].artist} - {curated_tracks[0].title}"
+    playlist_url = config.get("playlist", {}).get("target_playlist_url", "")
+
+    # Dry-Run handling
+    if dry_run:
+        log.info("Dry-run complete. Browser automation and state mutations bypassed.")
+        notifier.notify_rebuild_success(
+            mood_name=f"[Dry-Run] {mood_name}",
+            condition=context.condition,
+            temperature=context.temperature,
+            time_block=context.time_block,
+            track_count=len(curated_tracks),
+            lead_track=lead_track,
+            playlist_url=playlist_url,
+        )
+        return {
+            "success": True,
+            "dry_run": True,
+            "mood_name": mood_name,
+            "weather": context.condition,
+            "temperature": context.temperature,
+            "time_block": context.time_block,
+            "tracks_added": len(curated_tracks),
+            "lead_track": lead_track,
+        }
+
+    # Headless RPA Playwright Execution
+    executor = PlaywrightRPAExecutor(
+        config=config,
+        selectors_path="./config/selectors.json",
+        logger=log,
+    )
+
+    rpa_result = executor.rebuild_playlist(
+        tracks=curated_tracks,
+        mood_name=mood_name,
+        weather_condition=context.condition,
+        time_block=context.time_block,
+        temperature=context.temperature,
+    )
+
+    if not rpa_result.get("success"):
+        return rpa_result
+
+    # Update Persistent State
+    state["last_run_timestamp"] = context.timestamp
+    state["last_weather_condition"] = context.condition
+    state["last_temperature"] = context.temperature
+    state["last_time_block"] = context.time_block
+    state["last_mood"] = mood_name
+    state["last_playlist_tracks"] = [t.id for t in curated_tracks]
+    state["execution_count"] = state.get("execution_count", 0) + 1
+    state["status"] = "success"
+
+    save_state(state_path, state)
+    log.info("Updated state saved to %s (Execution #%d)", state_path, state["execution_count"])
+
+    # Dispatch Toast & Telegram Notifications
+    notifier.notify_rebuild_success(
+        mood_name=mood_name,
+        condition=context.condition,
+        temperature=context.temperature,
+        time_block=context.time_block,
+        track_count=len(curated_tracks),
+        lead_track=lead_track,
+        playlist_url=playlist_url,
+    )
+
+    elapsed = rpa_result.get("elapsed_seconds", 0)
+    log.info("AtmosTune cycle successfully completed in %.2fs. Browser closed, RAM released.", elapsed)
+
+    return {
+        "success": True,
+        "mood_name": mood_name,
+        "weather": context.condition,
+        "temperature": context.temperature,
+        "time_block": context.time_block,
+        "tracks_added": len(curated_tracks),
+        "elapsed_seconds": elapsed,
+        "lead_track": lead_track,
+    }
+
+
 def main() -> int:
     """Main CLI orchestrator for AtmosTune."""
     if hasattr(sys.stdout, "reconfigure"):
@@ -121,6 +345,22 @@ def main() -> int:
         help="Evaluate weather, mood, and select tracks without opening browser or modifying playlist.",
     )
     parser.add_argument(
+        "--mood",
+        type=str,
+        default=None,
+        help="Manually force a specific mood from the matrix (e.g. 'Chill Twilight').",
+    )
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Headlessly clear all tracks from the target Spotify playlist.",
+    )
+    parser.add_argument(
+        "--telegram",
+        action="store_true",
+        help="Launch interactive Telegram Bot remote controller listener.",
+    )
+    parser.add_argument(
         "--config",
         type=str,
         default="./config/config.yaml",
@@ -149,7 +389,6 @@ def main() -> int:
         backup_count=notify_cfg.get("backup_count", 3),
         verbose=args.verbose,
     )
-    notifier = AtmosNotifier(config=config, logger=logger)
 
     # 1. Interactive Authentication Mode
     if args.auth:
@@ -167,148 +406,53 @@ def main() -> int:
             logger.error("Authentication setup was not completed.")
             return 1
 
-    # 2. Lightweight Evaluation Phase (<20MB RAM)
-    state_path = Path("./data/state.json")
-    state = load_state(state_path)
+    # 2. Clear Playlist Mode
+    if args.clear:
+        logger.info("Executing on-demand playlist clear routine...")
+        res = clear_playlist_tracks(config=config, logger=logger)
+        if res.get("success"):
+            logger.info("Successfully cleared playlist (%d tracks removed in %.2fs).", res.get("tracks_removed", 0), res.get("elapsed_seconds", 0))
+            return 0
+        else:
+            logger.error("Failed to clear playlist: %s", res.get("error"))
+            return 1
 
-    logger.info("Evaluating real-time atmospheric conditions...")
-    context_fetcher = ContextFetcher(config=config, logger=logger)
-
-    try:
-        context: WeatherTimeContext = context_fetcher.get_current_context()
-    except Exception as exc:
-        logger.critical("Failed to acquire environmental context: %s", exc)
-        return 1
-
-    matched_mood = context.matched_mood
-    mood_name = matched_mood.get("mood_name", "Atmospheric Drift")
-
-    logger.info(
-        "Current Context: %s (%.1f°C, %s) | Block: %s | Mood: '%s'",
-        context.city_name,
-        context.temperature,
-        context.condition,
-        context.time_block,
-        mood_name,
-    )
-
-    # 3. Decision Engine: Check if browser invocation is necessary
-    should_run, reason = context_fetcher.should_trigger_update(
-        current_context=context,
-        state=state,
-        force=args.force,
-    )
-
-    if not should_run and not args.dry_run:
-        logger.info("Decision Engine: %s", reason)
-        logger.info("Execution complete. Script exiting cleanly to preserve system resources.")
-        return 0
-
-    logger.info("Decision Engine: %s [Triggering Playlist Synthesis]", reason)
-
-    # 4. Track Selection with Exponential Decay & Bell-Curve Narrative Sorting
-    track_db_path = "./data/tracks_db.json"
-    selector = SmartTrackSelector(
-        tracks_db_path=track_db_path,
-        config=config,
-        logger=logger,
-    )
-
-    curated_tracks = selector.select_tracks(
-        target_mood=matched_mood,
-        weather_condition=context.condition,
-        update_state=not args.dry_run,
-    )
-
-    if not curated_tracks:
-        logger.warning("No suitable tracks could be selected. Aborting.")
-        return 1
-
-    if hasattr(sys.stdout, "reconfigure"):
+    # 3. Telegram Controller Mode
+    if args.telegram:
+        from src.telegram_bot import AtmosTelegramBot
         try:
-            sys.stdout.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
+            bot = AtmosTelegramBot(
+                config=config,
+                rebuild_callback=run_atmostune_cycle,
+                clear_callback=clear_playlist_tracks,
+                logger=logger,
+            )
+            bot.run_polling()
+            return 0
+        except ValueError as val_err:
+            logger.error("Telegram configuration error: %s", val_err)
+            print(f"\n[!] Telegram Error: {val_err}")
+            return 1
+        except Exception as exc:
+            logger.critical("Telegram bot crashed: %s", exc)
+            return 1
 
-    print("\n" + "=" * 65)
-    print(f"[*] CURATED ATMOSPHERIC SOUNDTRACK: {mood_name.upper()}")
-    print(f"   Atmosphere: {context.condition} ({context.temperature:+.1f}°C) | Diurnal: {context.time_block}")
-    print(f"   Target Attributes: Energy {matched_mood.get('target_energy')}, Valence {matched_mood.get('target_valence')}")
-    print("=" * 65)
-    for i, trk in enumerate(curated_tracks, 1):
-        print(f"  {i:02d}. {trk.artist:<18} - {trk.title:<24} [E: {trk.energy:.2f} | Score: {trk.calculated_score:.3f}]")
-    print("=" * 65 + "\n")
-
-    # 5. Dry-Run Handling
-    if args.dry_run:
-        logger.info("Dry-run complete. Browser automation and state mutations bypassed.")
-        notifier.notify_rebuild_success(
-            mood_name=f"[Dry-Run] {mood_name}",
-            condition=context.condition,
-            temperature=context.temperature,
-            time_block=context.time_block,
-            track_count=len(curated_tracks),
-            lead_track=f"{curated_tracks[0].artist} - {curated_tracks[0].title}",
-        )
-        return 0
-
-    # 6. Playwright Headless Automation (Run-and-Kill <30s Execution)
-    executor = PlaywrightRPAExecutor(
-        config=config,
-        selectors_path="./config/selectors.json",
-        logger=logger,
-    )
-
+    # 4. Standard Run-and-Kill Execution Cycle
     try:
-        rpa_result = executor.rebuild_playlist(
-            tracks=curated_tracks,
-            mood_name=mood_name,
-            weather_condition=context.condition,
-            time_block=context.time_block,
-            temperature=context.temperature,
+        res = run_atmostune_cycle(
+            config=config,
+            force=args.force,
+            dry_run=args.dry_run,
+            mood_override=args.mood,
+            logger=logger,
         )
-    except AuthenticationRequiredError as auth_err:
-        logger.error(
-            "Authentication required! Please run 'python main.py --auth' to log in once.",
-        )
-        notifier.notify(
-            title="Authentication Required",
-            message="Please run 'python main.py --auth' to log into Spotify.",
-        )
+        return 0 if res.get("success") else 1
+    except AuthenticationRequiredError:
+        logger.error("Authentication required! Please run 'python main.py --auth' to log in once.")
         return 1
     except Exception as exc:
-        logger.error("RPA Execution encountered critical error: %s", exc)
+        logger.critical("Critical execution error: %s", exc)
         return 1
-
-    # 7. Update Persistent State
-    state["last_run_timestamp"] = context.timestamp
-    state["last_weather_condition"] = context.condition
-    state["last_temperature"] = context.temperature
-    state["last_time_block"] = context.time_block
-    state["last_mood"] = mood_name
-    state["last_playlist_tracks"] = [t.id for t in curated_tracks]
-    state["execution_count"] = state.get("execution_count", 0) + 1
-    state["status"] = "success" if rpa_result.get("success") else "failed"
-
-    save_state(state_path, state)
-    logger.info("Updated state saved to %s (Execution #%d)", state_path, state["execution_count"])
-
-    # 8. Dispatch Native Toast Notification
-    lead_track = f"{curated_tracks[0].artist} - {curated_tracks[0].title}"
-    notifier.notify_rebuild_success(
-        mood_name=mood_name,
-        condition=context.condition,
-        temperature=context.temperature,
-        time_block=context.time_block,
-        track_count=len(curated_tracks),
-        lead_track=lead_track,
-    )
-
-    logger.info(
-        "AtmosTune cycle successfully completed in %s. Browser closed, RAM released. Exiting.",
-        f"{rpa_result.get('elapsed_seconds', 0):.2f}s",
-    )
-    return 0
 
 
 if __name__ == "__main__":

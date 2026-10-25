@@ -466,3 +466,53 @@ class PlaywrightRPAExecutor:
             self.logger.info("Saved failure diagnosis screenshot to: %s", screenshot_path)
         except Exception as exc:
             self.logger.warning("Could not capture failure screenshot: %s", exc)
+
+    def clear_playlist(self, max_to_remove: int = 60) -> Dict[str, Any]:
+        """
+        Headlessly navigates to target playlist and removes all tracks.
+        """
+        start_time = time.time()
+        target_url = self.playlist_cfg.get("target_playlist_url", "")
+        if not target_url or "YOUR_PLAYLIST_ID" in target_url:
+            return {"success": False, "message": "No target playlist URL configured."}
+
+        self.logger.info("Starting headless playlist clear on: %s", target_url)
+
+        with sync_playwright() as p:
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=str(self.profile_dir),
+                headless=self.browser_cfg.get("headless", True),
+                args=self._get_browser_args(),
+                viewport={"width": 1280, "height": 800},
+                user_agent=self.browser_cfg.get("user_agent"),
+            )
+            try:
+                page = context.new_page()
+                page.set_default_timeout(self.browser_cfg.get("action_timeout_sec", 8) * 1000)
+                page.goto(target_url, wait_until="domcontentloaded", timeout=20000)
+                self._dismiss_cookie_banner(page)
+
+                if not self._verify_authentication(page):
+                    raise AuthenticationRequiredError(
+                        "Browser session not logged in. Please run 'python main.py --auth'."
+                    )
+
+                try:
+                    page.wait_for_selector("h1", timeout=15000)
+                    time.sleep(1.0)
+                except Exception:
+                    pass
+
+                removed = self._clear_existing_tracks(page, max_to_remove=max_to_remove)
+                elapsed = round(time.time() - start_time, 2)
+                return {
+                    "success": True,
+                    "tracks_removed": removed,
+                    "elapsed_seconds": elapsed,
+                }
+            except Exception as exc:
+                self.logger.error("Failed to clear playlist: %s", exc)
+                return {"success": False, "error": str(exc)}
+            finally:
+                context.close()
+

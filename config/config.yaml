@@ -2,14 +2,18 @@
 # Lightweight, run-and-kill background weather/time playlist auto-curator
 
 weather_api:
-  # OpenWeatherMap API Key. Can also be set via OPENWEATHER_API_KEY environment variable.
-  # If empty, AtmosTune smoothly falls back to realistic environmental simulation.
+  # Provider: "open-meteo" (Free, real-time live global weather, NO API KEY NEEDED)
+  # or "openweathermap" (Requires API key from openweathermap.org)
+  provider: "open-meteo"
+  # Automatically detects your geographic coordinates and city via public IP
+  auto_detect_location: true
+  # OpenWeatherMap API Key (optional, can also be set via OPENWEATHER_API_KEY env var)
   api_key: ""
-  lat: 40.7128
-  lon: -74.0060
-  city_name: "New York"
+  lat: -5.0060
+  lon: 119.5730
+  city_name: "Maros/Makassar"
   units: "metric"  # "metric" (Celsius) or "imperial" (Fahrenheit)
-  timeout_seconds: 5
+  timeout_seconds: 8
   mock_fallback: true
 
 scheduling:
@@ -63,6 +67,18 @@ notifications:
   log_level: "INFO"
   max_log_bytes: 2097152  # 2MB
   backup_count: 3
+
+telegram:
+  # Enable Telegram remote control and rebuild alerts
+  enabled: false
+  # Telegram Bot Token obtained from @BotFather (e.g. "123456789:ABCdefGHIjklmNOPqrsTUVwxyz")
+  # Can also be set via TELEGRAM_BOT_TOKEN environment variable.
+  bot_token: ""
+  # Whitelist of allowed Telegram Chat IDs (e.g. [123456789])
+  # When empty, send /start to your bot in Telegram to receive your Chat ID.
+  allowed_chat_ids: []
+  # Automatically send a Telegram summary message when scheduled background rebuild occurs
+  notify_on_rebuild: true
 
 # Weather & Time -> Mood Mapping Rules
 # Evaluates local weather condition + time block to compute target musical parameters
