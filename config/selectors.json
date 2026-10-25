@@ -16,8 +16,10 @@
     "track_title_link": "a[data-testid='internal-track-link']",
     "track_row_more_button": "button[data-testid='more-button'], button[aria-label*='More options']",
     "context_menu_remove": "button[role='menuitem']:has-text('Remove from this playlist'), div[role='menuitem']:has-text('Remove')",
-    "in_playlist_search_box": "input[data-testid='playlist-search-input'], input[role='searchbox'], input[placeholder*='Let\\'s find something']",
-    "in_playlist_add_button": "button[data-testid='add-to-playlist-button'], button:has-text('Add')"
+    "in_playlist_search_box": "input[placeholder='Search'], input[placeholder*='Search for songs or episodes'], input[placeholder*='Search for songs']",
+    "in_playlist_add_button": "button[data-testid='add-to-playlist-button'], button[aria-label*='Add to playlist'], button[aria-label*='Add to Playlist']",
+    "in_playlist_search_clear": "button[aria-label='Clear search field'], button[data-testid='clear-button']",
+    "in_playlist_open_search_button": "button:has-text('Add')"
   },
   "global_search": {
     "search_nav_button": "a[href='/search'], button[aria-label='Search']",

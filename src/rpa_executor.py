@@ -249,14 +249,18 @@ class PlaywrightRPAExecutor:
                 self._update_playlist_metadata(page, mood_name, weather_condition, time_block, temperature)
 
                 elapsed = round(time.time() - start_time, 2)
-                self.logger.info("Playlist rebuild completed successfully in %.2fs (< %ds target).", elapsed, max_duration)
+                is_success = tracks_added > 0
+                if is_success:
+                    self.logger.info("Playlist rebuild completed successfully: %d tracks added in %.2fs (< %ds target).", tracks_added, elapsed, max_duration)
+                else:
+                    self.logger.warning("Rebuild finished in %.2fs but 0 tracks were added to the playlist.", elapsed)
 
                 return {
-                    "success": True,
+                    "success": is_success,
                     "simulated": False,
                     "tracks_added": tracks_added,
                     "elapsed_seconds": elapsed,
-                    "message": f"Successfully injected {tracks_added} tracks into Spotify playlist.",
+                    "message": f"Successfully injected {tracks_added} tracks into Spotify playlist." if is_success else "No tracks could be added to playlist.",
                 }
 
             except AuthenticationRequiredError:
@@ -312,58 +316,71 @@ class PlaywrightRPAExecutor:
 
     def _sync_tracks_to_playlist(self, page: Page, tracks: List[Any]) -> int:
         """
-        Injects tracks into the playlist using the fast in-playlist search widget.
-        Falls back to global search if custom playlist widget is absent.
+        Injects curated tracks into the Spotify playlist using the high-speed search widget.
         """
         in_search_sel = self.selectors["playlist_view"]["in_playlist_search_box"]
         add_btn_sel = self.selectors["playlist_view"]["in_playlist_add_button"]
+        open_search_sel = self.selectors["playlist_view"].get("in_playlist_open_search_button", "button:has-text('Add')")
 
         added_count = 0
 
-        # Attempt to locate the in-playlist search box ('Let's find something for your playlist')
+        # Wait for Spotify SPA to hydrate
         try:
-            search_input = page.locator(in_search_sel).first
-            if search_input.is_visible(timeout=3500):
-                self.logger.info("Using high-speed in-playlist search widget...")
-                for trk in tracks:
-                    query = getattr(trk, "search_query", f"{trk.artist} - {trk.title}")
-                    search_input.fill("")
-                    search_input.fill(query)
-                    time.sleep(0.4)
+            page.wait_for_selector("h1", timeout=15000)
+        except Exception:
+            self.logger.debug("Playlist heading did not appear within 15s; proceeding.")
 
-                    add_btn = page.locator(add_btn_sel).first
-                    if add_btn.is_visible(timeout=3000):
-                        add_btn.click()
-                        added_count += 1
-                        self.logger.debug("Added track [%d]: %s", added_count, query)
-                        time.sleep(0.3)
-                    else:
-                        self.logger.warning("No add button for track: %s", query)
+        time.sleep(2.0)
+
+        # Check if search input is already visible
+        search_input_locator = page.locator(in_search_sel).first
+        if not search_input_locator.is_visible():
+            try:
+                open_btn = page.locator(open_search_sel).first
+                if open_btn.is_visible(timeout=3000):
+                    self.logger.info("Clicking + Add button to open playlist search drawer...")
+                    open_btn.click()
+                    time.sleep(1.5)
+            except Exception as exc:
+                self.logger.debug("Open search button error: %s", exc)
+
+        try:
+            self.logger.info("Locating search widget...")
+            search_input = page.wait_for_selector(in_search_sel, timeout=12000)
+            if search_input and search_input.is_visible():
+                self.logger.info("Playlist search widget active. Adding %d curated tracks...", len(tracks))
+
+                for idx, trk in enumerate(tracks, 1):
+                    query = getattr(trk, "search_query", f"{trk.artist} - {trk.title}")
+                    try:
+                        search_input.fill("")
+                        search_input.fill(query)
+                        time.sleep(1.2)
+
+                        # Locate the track-specific Add button
+                        add_btn = page.locator(add_btn_sel).first
+                        if add_btn.is_visible(timeout=4000):
+                            add_btn.click(force=True)
+                            time.sleep(0.5)
+
+                            # Dismiss any open menu/tippy overlay before searching next track
+                            try:
+                                page.keyboard.press("Escape")
+                                time.sleep(0.3)
+                            except Exception:
+                                pass
+
+                            added_count += 1
+                            self.logger.info("  [%02d/%02d] Added: %s", idx, len(tracks), query)
+                            time.sleep(0.4)
+                        else:
+                            self.logger.warning("  [%02d/%02d] Add button not found for: %s", idx, len(tracks), query)
+                    except Exception as trk_err:
+                        self.logger.warning("Error injecting '%s': %s", query, trk_err)
 
                 return added_count
         except Exception as exc:
-            self.logger.debug("In-playlist search widget not directly accessible: %s", exc)
-
-        # Alternative: Fast query injection via Spotify Search page
-        self.logger.info("Using direct URL search injection...")
-        for trk in tracks:
-            query = getattr(trk, "search_query", f"{trk.artist} - {trk.title}")
-            encoded = quote_plus(query)
-            try:
-                page.goto(f"https://open.spotify.com/search/{encoded}/tracks", wait_until="domcontentloaded", timeout=8000)
-                row = page.locator(self.selectors["global_search"]["search_result_track_row"]).first
-                if row.is_visible(timeout=4000):
-                    row.hover()
-                    more_btn = row.locator(self.selectors["global_search"]["search_track_more_button"]).first
-                    if more_btn.is_visible(timeout=2000):
-                        more_btn.click()
-                        page.locator(self.selectors["global_search"]["context_menu_add_to_playlist"]).first.click(timeout=3000)
-                        # Target first playlist or matching name
-                        page.locator("button[role='menuitem'], div[role='menuitem']").first.click(timeout=3000)
-                        added_count += 1
-                        time.sleep(0.3)
-            except Exception as item_exc:
-                self.logger.debug("Item injection failed for %s: %s", query, item_exc)
+            self.logger.error("In-playlist search widget failed: %s", exc)
 
         return added_count
 
