@@ -40,7 +40,9 @@ playlist:
   # Example: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
   target_playlist_url: "https://open.spotify.com/playlist/5qvujTFIG3TgSfgT5b8qqa?si=c673186ffd9d4ff0"
   playlist_name_prefix: "AtmosTune • "
-  max_tracks: 25
+  max_tracks: 20
+  # Synchronization mode: "replace" (overwrites previous tracks to match current mood) or "append"
+  sync_mode: "replace"
   # Energy curve type: "bell_curve" (gentle start -> peak -> warm down), "steady", or "ascending"
   curve_type: "bell_curve"
   curve_sigma: 0.18

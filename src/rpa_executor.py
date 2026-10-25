@@ -314,6 +314,42 @@ class PlaywrightRPAExecutor:
         # If neither is definitively visible, check page content
         return "login" not in page.url.lower()
 
+    def _clear_existing_tracks(self, page: Page, max_to_remove: int = 40) -> int:
+        """
+        Removes previous tracks from the playlist for 'replace' mode.
+        """
+        self.logger.info("Clearing previous tracks for 'replace' mode...")
+        removed = 0
+        more_btn_sel = self.selectors["playlist_view"]["track_row_more_button"]
+        remove_item_sel = self.selectors["playlist_view"]["context_menu_remove"]
+
+        for _ in range(max_to_remove):
+            row = page.locator("div[data-testid='tracklist-row']").first
+            if not row.is_visible(timeout=1500):
+                break
+            try:
+                row.hover()
+                more_btn = row.locator(more_btn_sel).first
+                if more_btn.is_visible(timeout=1500):
+                    more_btn.click(force=True)
+                    time.sleep(0.3)
+                    remove_item = page.locator(remove_item_sel).first
+                    if remove_item.is_visible(timeout=1500):
+                        remove_item.click(force=True)
+                        removed += 1
+                        time.sleep(0.3)
+                    else:
+                        page.keyboard.press("Escape")
+                        break
+                else:
+                    break
+            except Exception:
+                page.keyboard.press("Escape")
+                break
+
+        self.logger.info("Cleared %d previous tracks from playlist.", removed)
+        return removed
+
     def _sync_tracks_to_playlist(self, page: Page, tracks: List[Any]) -> int:
         """
         Injects curated tracks directly into the Spotify playlist using the verified in-playlist search box.
@@ -338,6 +374,11 @@ class PlaywrightRPAExecutor:
                 time.sleep(1.0)
         except Exception:
             pass
+
+        # Check synchronization mode: replace vs append
+        sync_mode = self.playlist_cfg.get("sync_mode", "append")
+        if sync_mode == "replace":
+            self._clear_existing_tracks(page)
 
         # If search input is not visible, check for 'Find more' button and click it to reveal search
         search_input_locator = page.locator(in_search_sel).first
