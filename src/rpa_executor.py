@@ -317,52 +317,81 @@ class PlaywrightRPAExecutor:
 
     def _get_existing_track_titles(self, page: Page) -> set:
         """
-        Inspects the target playlist grid and collects all existing track titles (lowercased)
+        Inspects the target playlist and collects all existing track titles (lowercased)
         to prevent duplicate additions.
         """
         existing = set()
-        grid_sel = self.selectors["playlist_view"].get("playlist_tracklist_grid", "div[data-testid='playlist-tracklist']")
         try:
-            grid = page.locator(grid_sel).first
-            if grid.is_visible(timeout=4000):
-                link_locators = grid.locator("a[data-testid='internal-track-link']").all()
-                for l in link_locators:
-                    try:
-                        text = l.inner_text(timeout=500).strip().lower()
-                        if text:
-                            existing.add(text)
-                    except Exception:
-                        pass
+            link_locators = page.locator("div[data-testid='tracklist-row'] a[data-testid='internal-track-link']").all()
+            for l in link_locators:
+                try:
+                    text = l.inner_text(timeout=500).strip().lower()
+                    if text:
+                        existing.add(text)
+                except Exception:
+                    pass
         except Exception as exc:
             self.logger.debug("Could not inspect existing playlist tracks: %s", exc)
         return existing
 
-    def _clear_existing_tracks(self, page: Page, max_to_remove: int = 60) -> int:
+    def _clear_existing_tracks(self, page: Page, max_to_remove: int = 100) -> int:
         """
         Removes previous tracks from the playlist for 'replace' mode or clear command.
-        Uses fast, verified keyboard Delete on playlist-tracklist rows.
+        Uses fast, verified bulk selection and keyboard Delete on playlist rows.
         """
         self.logger.info("Clearing previous tracks from target playlist...")
         removed = 0
 
-        grid_sel = self.selectors["playlist_view"].get("playlist_tracklist_grid", "div[data-testid='playlist-tracklist']")
-
-        # Wait for playlist content to hydrate
+        # Wait specifically for tracklist rows to hydrate, rather than header elements
+        row_sel = "div[data-testid='tracklist-row']"
         try:
-            page.wait_for_selector(f"{grid_sel}, h1", timeout=15000)
+            page.wait_for_selector(row_sel, timeout=7000)
             time.sleep(1.0)
         except Exception:
-            pass
+            # If not rendered yet, give SPA a brief hydration moment
+            time.sleep(1.5)
 
-        grid = page.locator(grid_sel).first
-        if not grid.is_visible(timeout=3000):
+        row_locator = page.locator(row_sel)
+        initial_count = row_locator.count()
+
+        if initial_count == 0:
+            # Re-check once after scrolling slightly in case of virtual list
+            try:
+                page.mouse.wheel(0, 300)
+                time.sleep(0.8)
+                initial_count = row_locator.count()
+            except Exception:
+                pass
+
+        if initial_count == 0:
             self.logger.info("Playlist grid has 0 tracks (already clean).")
             return 0
 
-        # Rapidly click first row and press Delete key until playlist grid is cleared
+        self.logger.info("Found %d previous tracks to clear from playlist.", initial_count)
+
+        # Method 1: Bulk select all (Click first row -> Ctrl+A -> Delete)
+        try:
+            first_row = row_locator.first
+            if first_row.is_visible(timeout=2000):
+                first_row.click(timeout=1500)
+                time.sleep(0.3)
+                page.keyboard.press("Control+a")
+                time.sleep(0.3)
+                page.keyboard.press("Delete")
+                time.sleep(1.2)
+
+                remaining = row_locator.count()
+                if remaining == 0:
+                    removed = initial_count
+                    self.logger.info("Cleared %d previous tracks via bulk selection.", removed)
+                    return removed
+        except Exception as exc:
+            self.logger.debug("Bulk delete attempt bypassed: %s", exc)
+
+        # Method 2: Sequential click and Delete key until all rows are removed
         for step in range(max_to_remove):
             try:
-                row = grid.locator("div[data-testid='tracklist-row']").first
+                row = row_locator.first
                 if not row.is_visible(timeout=1000):
                     break
                 row.click(timeout=1000)
@@ -370,7 +399,7 @@ class PlaywrightRPAExecutor:
                 removed += 1
                 time.sleep(0.2)
             except Exception as exc:
-                self.logger.debug("Row clear finished or stopped at step %d: %s", step, exc)
+                self.logger.debug("Sequential clear ended at step %d: %s", step, exc)
                 break
 
         self.logger.info("Cleared %d previous tracks from playlist.", removed)
