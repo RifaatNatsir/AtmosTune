@@ -971,10 +971,13 @@ class AtmosTelegramBot:
                     block = res.get("time_block", "now")
                     playlist_url = self.config.get("playlist", {}).get("target_playlist_url", "")
 
+                    cover_note = f"🖼️ *Cover Art*: `Dynamic 600x600 Art Generated`\n" if res.get("cover_path") else ""
+
                     reply_text = (
                         f"✅ *Spotify Playlist Berhasil Disinkronkan!*\n\n"
                         f"🎨 *Tema / Mood*: *{mood_name}*\n"
                         f"🌦️ *Atmosphere*: `{weather}` ({temp:+.1f}°C) • `{block}`\n"
+                        f"{cover_note}"
                         f"🎵 *Tracks*: `{tracks_count}` lagu dimasukkan dalam `{elapsed:.1f}s`\n\n"
                         f"🔗 [Buka 'MyAtmosTune' di Spotify]({playlist_url})"
                     )

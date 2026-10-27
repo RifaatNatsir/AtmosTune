@@ -24,6 +24,7 @@ import yaml
 
 from src.context_fetcher import ContextFetcher, WeatherTimeContext
 from src.track_selector import SmartTrackSelector
+from src.cover_generator import CoverArtGenerator
 from src.rpa_executor import PlaywrightRPAExecutor, AuthenticationRequiredError
 from src.notifier import AtmosNotifier, setup_logger
 
@@ -301,10 +302,28 @@ def run_atmostune_cycle(
         log.warning("No suitable tracks could be selected. Aborting.")
         return {"success": False, "error": "No tracks could be selected."}
 
+    # Dynamic Playlist Cover Art Generation
+    cover_generator = CoverArtGenerator(assets_dir="./assets", logger=log)
+    cover_path = "data/current_cover.jpg"
+    try:
+        generated_cover = cover_generator.generate_cover(
+            weather_tag=context.condition,
+            temp_c=context.temperature,
+            time_block=context.time_block,
+            sub_vibe=mood_name,
+            output_path=cover_path,
+        )
+        log.info("Generated dynamic playlist cover: %s", generated_cover)
+    except Exception as cover_err:
+        log.warning("Failed to generate dynamic cover art: %s", cover_err)
+        generated_cover = None
+
     print("\n" + "=" * 65)
     print(f"[*] CURATED ATMOSPHERIC SOUNDTRACK: {mood_name.upper()}")
     print(f"   Atmosphere: {context.condition} ({context.temperature:+.1f}°C) | Diurnal: {context.time_block}")
     print(f"   Target Attributes: Energy {matched_mood.get('target_energy')}, Valence {matched_mood.get('target_valence')}")
+    if generated_cover:
+        print(f"   Dynamic Cover: {generated_cover}")
     print("=" * 65)
     for i, trk in enumerate(curated_tracks, 1):
         print(f"  {i:02d}. {trk.artist:<18} - {trk.title:<24} [E: {trk.energy:.2f} | Score: {trk.calculated_score:.3f}]")
@@ -316,6 +335,8 @@ def run_atmostune_cycle(
     # Dry-Run handling
     if dry_run:
         log.info("Dry-run complete. Browser automation and state mutations bypassed.")
+        if generated_cover:
+            print(f"[+] Preview generated cover art: {os.path.abspath(generated_cover)}")
         notifier.notify_rebuild_success(
             mood_name=f"[Dry-Run] {mood_name}",
             condition=context.condition,
@@ -334,6 +355,7 @@ def run_atmostune_cycle(
             "time_block": context.time_block,
             "tracks_added": len(curated_tracks),
             "lead_track": lead_track,
+            "cover_path": generated_cover,
         }
 
     # Headless RPA Playwright Execution
@@ -349,6 +371,7 @@ def run_atmostune_cycle(
         weather_condition=context.condition,
         time_block=context.time_block,
         temperature=context.temperature,
+        cover_image_path=generated_cover or cover_path,
     )
 
     if not rpa_result.get("success"):
@@ -390,6 +413,7 @@ def run_atmostune_cycle(
         "tracks_added": len(curated_tracks),
         "elapsed_seconds": elapsed,
         "lead_track": lead_track,
+        "cover_path": generated_cover,
     }
 
 

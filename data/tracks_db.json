@@ -466,7 +466,7 @@
   {
     "id": "trk_022",
     "title": "Nicole Kidman",
-    "artist": "ADÉLA",
+    "artist": "AD\u00c9LA",
     "album": "PRIMA",
     "genre": "pop",
     "energy": 0.73,
@@ -481,7 +481,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "ADÉLA - Nicole Kidman",
+    "search_query": "AD\u00c9LA - Nicole Kidman",
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -969,9 +969,9 @@
   },
   {
     "id": "trk_043",
-    "title": "Мой стиль как бабушкины блинчики",
-    "artist": "гриива",
-    "album": "Мой стиль как бабушкины блинчики",
+    "title": "\u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
+    "artist": "\u0433\u0440\u0438\u0438\u0432\u0430",
+    "album": "\u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
     "genre": "lofi",
     "energy": 0.31,
     "valence": 0.41,
@@ -985,7 +985,7 @@
       "study",
       "acoustic"
     ],
-    "search_query": "гриива - Мой стиль как бабушкины блинчики",
+    "search_query": "\u0433\u0440\u0438\u0438\u0432\u0430 - \u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
     "duration_sec": 100,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
@@ -1281,7 +1281,7 @@
   },
   {
     "id": "trk_056",
-    "title": "A Peaceful Mountain Village (From “Suikoden II”) - Acoustic Guitar",
+    "title": "A Peaceful Mountain Village (From \u201cSuikoden II\u201d) - Acoustic Guitar",
     "artist": "John Oeth",
     "album": "Video Game Guitar Covers, Vol. 4",
     "genre": "acoustic",
@@ -1297,7 +1297,7 @@
       "study",
       "acoustic"
     ],
-    "search_query": "John Oeth - A Peaceful Mountain Village (From “Suikoden II”) - Acoustic Guitar",
+    "search_query": "John Oeth - A Peaceful Mountain Village (From \u201cSuikoden II\u201d) - Acoustic Guitar",
     "duration_sec": 106,
     "last_played_timestamp": 1793099290.8126533,
     "play_count": 1,
@@ -1737,7 +1737,7 @@
   },
   {
     "id": "trk_075",
-    "title": "what’s wrong with me",
+    "title": "what\u2019s wrong with me",
     "artist": "Olivia Rodrigo",
     "album": "you seem pretty sad for a girl so in love",
     "genre": "ambient",
@@ -1753,7 +1753,7 @@
       "night",
       "gloomy"
     ],
-    "search_query": "Olivia Rodrigo - what’s wrong with me",
+    "search_query": "Olivia Rodrigo - what\u2019s wrong with me",
     "duration_sec": 224,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -2171,7 +2171,7 @@
     "id": "trk_093",
     "title": "River of Light (Festival EDM Mix IX)",
     "artist": "GUGADJ",
-    "album": "River of Light — Vol. 1",
+    "album": "River of Light \u2014 Vol. 1",
     "genre": "synthwave",
     "energy": 0.65,
     "valence": 0.57,
@@ -2315,7 +2315,7 @@
     "id": "trk_099",
     "title": "River of Light (Pop EDM Mix VIII)",
     "artist": "GUGADJ",
-    "album": "River of Light — Vol. 1",
+    "album": "River of Light \u2014 Vol. 1",
     "genre": "synthwave",
     "energy": 0.69,
     "valence": 0.61,
@@ -2339,7 +2339,7 @@
     "id": "trk_100",
     "title": "River of Light (GUGADJ Remix III)",
     "artist": "GUGADJ",
-    "album": "River of Light — Vol. 1",
+    "album": "River of Light \u2014 Vol. 1",
     "genre": "synthwave",
     "energy": 0.72,
     "valence": 0.64,
@@ -2363,7 +2363,7 @@
     "id": "trk_101",
     "title": "River of Light (Re Rivka Remix II)",
     "artist": "GUGADJ",
-    "album": "River of Light — Vol. 1",
+    "album": "River of Light \u2014 Vol. 1",
     "genre": "synthwave",
     "energy": 0.69,
     "valence": 0.61,
@@ -2841,9 +2841,9 @@
   },
   {
     "id": "trk_121",
-    "title": "Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "title": "Il Doc 5 (feat. Gu\u00e8, Sayf, Glocky & FT Kings)",
     "artist": "VillaBanks",
-    "album": "Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "album": "Il Doc 5 (feat. Gu\u00e8, Sayf, Glocky & FT Kings)",
     "genre": "indopop",
     "energy": 0.48,
     "valence": 0.48,
@@ -2857,7 +2857,7 @@
       "hits_indo",
       "indonesia"
     ],
-    "search_query": "VillaBanks - Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "search_query": "VillaBanks - Il Doc 5 (feat. Gu\u00e8, Sayf, Glocky & FT Kings)",
     "duration_sec": 262,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -2889,7 +2889,7 @@
   },
   {
     "id": "trk_123",
-    "title": "santa doesn’t know you like i do",
+    "title": "santa doesn\u2019t know you like i do",
     "artist": "Sabrina Carpenter",
     "album": "Top Christmas Pop Hits 2026 by Digster Pop",
     "genre": "pop",
@@ -2905,7 +2905,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Sabrina Carpenter - santa doesn’t know you like i do",
+    "search_query": "Sabrina Carpenter - santa doesn\u2019t know you like i do",
     "duration_sec": 189,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -3033,9 +3033,9 @@
   },
   {
     "id": "trk_129",
-    "title": "Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023™",
+    "title": "Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023\u2122",
     "artist": "Weird Genius",
-    "album": "Glorious The Remix (The Official Song of FIFA U-17 World Cup Indonesia 2023™)",
+    "album": "Glorious The Remix (The Official Song of FIFA U-17 World Cup Indonesia 2023\u2122)",
     "genre": "pop",
     "energy": 0.74,
     "valence": 0.71,
@@ -3049,7 +3049,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Weird Genius - Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023™",
+    "search_query": "Weird Genius - Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023\u2122",
     "duration_sec": 199,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -3131,7 +3131,7 @@
     "id": "trk_133",
     "title": "Deslocado",
     "artist": "NAPA",
-    "album": "Top Hits pra você conhecer",
+    "album": "Top Hits pra voc\u00ea conhecer",
     "genre": "pop",
     "energy": 0.78,
     "valence": 0.75,
@@ -3177,7 +3177,7 @@
   },
   {
     "id": "trk_135",
-    "title": "We Don’t Talk Anymore (feat. Selena Gomez)",
+    "title": "We Don\u2019t Talk Anymore (feat. Selena Gomez)",
     "artist": "Charlie Puth",
     "album": "Global Top Hits - Summer 2024",
     "genre": "pop",
@@ -3193,7 +3193,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Charlie Puth - We Don’t Talk Anymore (feat. Selena Gomez)",
+    "search_query": "Charlie Puth - We Don\u2019t Talk Anymore (feat. Selena Gomez)",
     "duration_sec": 217,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -3395,7 +3395,7 @@
     "id": "trk_144",
     "title": "Bawa Dia Kembali",
     "artist": "Mahalini",
-    "album": "fábula",
+    "album": "f\u00e1bula",
     "genre": "indopop",
     "energy": 0.52,
     "valence": 0.52,
@@ -3419,7 +3419,7 @@
     "id": "trk_145",
     "title": "Sial",
     "artist": "Mahalini",
-    "album": "fábula",
+    "album": "f\u00e1bula",
     "genre": "indopop",
     "energy": 0.48,
     "valence": 0.48,
@@ -3467,7 +3467,7 @@
     "id": "trk_147",
     "title": "Bohongi Hati",
     "artist": "Mahalini",
-    "album": "fábula",
+    "album": "f\u00e1bula",
     "genre": "indopop",
     "energy": 0.51,
     "valence": 0.51,
@@ -5375,7 +5375,7 @@
   },
   {
     "id": "trk_227",
-    "title": "You Belong With Me (Taylor’s Version)",
+    "title": "You Belong With Me (Taylor\u2019s Version)",
     "artist": "Taylor Swift",
     "album": "Fearless (Taylor's Version)",
     "genre": "pop",
@@ -5391,7 +5391,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Taylor Swift - You Belong With Me (Taylor’s Version)",
+    "search_query": "Taylor Swift - You Belong With Me (Taylor\u2019s Version)",
     "duration_sec": 231,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -5977,7 +5977,7 @@
     "id": "trk_252",
     "title": "Perfect",
     "artist": "Ed Sheeran",
-    "album": "÷ (Deluxe)",
+    "album": "\u00f7 (Deluxe)",
     "genre": "pop",
     "energy": 0.73,
     "valence": 0.7,
@@ -6049,7 +6049,7 @@
     "id": "trk_255",
     "title": "Dive",
     "artist": "Ed Sheeran",
-    "album": "÷ (Deluxe)",
+    "album": "\u00f7 (Deluxe)",
     "genre": "pop",
     "energy": 0.79,
     "valence": 0.76,
@@ -7055,7 +7055,7 @@
   },
   {
     "id": "trk_297",
-    "title": "It’s Only - ODESZA VIP Remix",
+    "title": "It\u2019s Only - ODESZA VIP Remix",
     "artist": "ODESZA",
     "album": "A Moment Apart (Deluxe Edition)",
     "genre": "electronic",
@@ -7071,7 +7071,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "ODESZA - It’s Only - ODESZA VIP Remix",
+    "search_query": "ODESZA - It\u2019s Only - ODESZA VIP Remix",
     "duration_sec": 240,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -7367,7 +7367,7 @@
   },
   {
     "id": "trk_310",
-    "title": "Señorita",
+    "title": "Se\u00f1orita",
     "artist": "Shawn Mendes",
     "album": "Shawn Mendes (Deluxe)",
     "genre": "pop",
@@ -7383,7 +7383,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Shawn Mendes - Señorita",
+    "search_query": "Shawn Mendes - Se\u00f1orita",
     "duration_sec": 190,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -7897,7 +7897,7 @@
     "id": "trk_332",
     "title": "Without You (feat. Sandro Cavazza)",
     "artist": "Avicii",
-    "album": "AVĪCI (01)",
+    "album": "AV\u012aCI (01)",
     "genre": "electronic",
     "energy": 0.78,
     "valence": 0.68,
@@ -8135,7 +8135,7 @@
   },
   {
     "id": "trk_342",
-    "title": "Location Unknown ◐ (feat. BEKA) - Brooklyn Session",
+    "title": "Location Unknown \u25d0 (feat. BEKA) - Brooklyn Session",
     "artist": "HONNE",
     "album": "Love Me / Love Me Not (Sessions)",
     "genre": "r&b",
@@ -8151,7 +8151,7 @@
       "breakout",
       "hits_global"
     ],
-    "search_query": "HONNE - Location Unknown ◐ (feat. BEKA) - Brooklyn Session",
+    "search_query": "HONNE - Location Unknown \u25d0 (feat. BEKA) - Brooklyn Session",
     "duration_sec": 328,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -8159,7 +8159,7 @@
   },
   {
     "id": "trk_343",
-    "title": "Crying Over You ◐",
+    "title": "Crying Over You \u25d0",
     "artist": "HONNE",
     "album": "Love Me / Love Me Not",
     "genre": "r&b",
@@ -8175,7 +8175,7 @@
       "breakout",
       "hits_global"
     ],
-    "search_query": "HONNE - Crying Over You ◐",
+    "search_query": "HONNE - Crying Over You \u25d0",
     "duration_sec": 242,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -8183,7 +8183,7 @@
   },
   {
     "id": "trk_344",
-    "title": "Day 1 ◑",
+    "title": "Day 1 \u25d1",
     "artist": "HONNE",
     "album": "Love Me / Love Me Not",
     "genre": "r&b",
@@ -8199,7 +8199,7 @@
       "breakout",
       "hits_global"
     ],
-    "search_query": "HONNE - Day 1 ◑",
+    "search_query": "HONNE - Day 1 \u25d1",
     "duration_sec": 233,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -8305,7 +8305,7 @@
     "id": "trk_349",
     "title": "FF",
     "artist": "Troye Sivan",
-    "album": "She’s the Best",
+    "album": "She\u2019s the Best",
     "genre": "pop",
     "energy": 0.72,
     "valence": 0.69,
@@ -9335,7 +9335,7 @@
   },
   {
     "id": "trk_392",
-    "title": "Lean On (feat. MØ & DJ Snake)",
+    "title": "Lean On (feat. M\u00d8 & DJ Snake)",
     "artist": "Major Lazer",
     "album": "Peace Is The Mission (Extended)",
     "genre": "electronic",
@@ -9351,7 +9351,7 @@
       "peak",
       "synthwave"
     ],
-    "search_query": "Major Lazer - Lean On (feat. MØ & DJ Snake)",
+    "search_query": "Major Lazer - Lean On (feat. M\u00d8 & DJ Snake)",
     "duration_sec": 176,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -9407,9 +9407,9 @@
   },
   {
     "id": "trk_395",
-    "title": "Cold Water (feat. Justin Bieber & MØ)",
+    "title": "Cold Water (feat. Justin Bieber & M\u00d8)",
     "artist": "Major Lazer",
-    "album": "Cold Water (feat. Justin Bieber & MØ)",
+    "album": "Cold Water (feat. Justin Bieber & M\u00d8)",
     "genre": "electronic",
     "energy": 0.74,
     "valence": 0.64,
@@ -9423,7 +9423,7 @@
       "peak",
       "synthwave"
     ],
-    "search_query": "Major Lazer - Cold Water (feat. Justin Bieber & MØ)",
+    "search_query": "Major Lazer - Cold Water (feat. Justin Bieber & M\u00d8)",
     "duration_sec": 185,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -10296,7 +10296,7 @@
   {
     "id": "trk_432",
     "title": "Bahagia",
-    "artist": "GAC (Gamaliél Audrey Cantika)",
+    "artist": "GAC (Gamali\u00e9l Audrey Cantika)",
     "album": "STRONGER",
     "genre": "indopop",
     "energy": 0.63,
@@ -10311,7 +10311,7 @@
       "breakout",
       "indonesia"
     ],
-    "search_query": "GAC (Gamaliél Audrey Cantika) - Bahagia",
+    "search_query": "GAC (Gamali\u00e9l Audrey Cantika) - Bahagia",
     "duration_sec": 222,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -10320,7 +10320,7 @@
   {
     "id": "trk_433",
     "title": "Galih & Ratna (From \"Galih & Ratna\")",
-    "artist": "GAC (Gamaliél Audrey Cantika)",
+    "artist": "GAC (Gamali\u00e9l Audrey Cantika)",
     "album": "Galih & Ratna (From \"Galih & Ratna\")",
     "genre": "indopop",
     "energy": 0.64,
@@ -10335,7 +10335,7 @@
       "breakout",
       "indonesia"
     ],
-    "search_query": "GAC (Gamaliél Audrey Cantika) - Galih & Ratna (From \"Galih & Ratna\")",
+    "search_query": "GAC (Gamali\u00e9l Audrey Cantika) - Galih & Ratna (From \"Galih & Ratna\")",
     "duration_sec": 183,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -10344,7 +10344,7 @@
   {
     "id": "trk_434",
     "title": "Seberapa Pantas",
-    "artist": "GAC (Gamaliél Audrey Cantika)",
+    "artist": "GAC (Gamali\u00e9l Audrey Cantika)",
     "album": "Anugerah Terindah dari Sheila On 7",
     "genre": "indopop",
     "energy": 0.58,
@@ -10359,7 +10359,7 @@
       "breakout",
       "indonesia"
     ],
-    "search_query": "GAC (Gamaliél Audrey Cantika) - Seberapa Pantas",
+    "search_query": "GAC (Gamali\u00e9l Audrey Cantika) - Seberapa Pantas",
     "duration_sec": 238,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -10368,7 +10368,7 @@
   {
     "id": "trk_435",
     "title": "HIGHER",
-    "artist": "GAC (Gamaliél Audrey Cantika)",
+    "artist": "GAC (Gamali\u00e9l Audrey Cantika)",
     "album": "HIGHER",
     "genre": "indopop",
     "energy": 0.62,
@@ -10383,7 +10383,7 @@
       "breakout",
       "indonesia"
     ],
-    "search_query": "GAC (Gamaliél Audrey Cantika) - HIGHER",
+    "search_query": "GAC (Gamali\u00e9l Audrey Cantika) - HIGHER",
     "duration_sec": 253,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12456,7 +12456,7 @@
   {
     "id": "trk_522",
     "title": "Heartbreak Anniversary",
-    "artist": "GIVĒON",
+    "artist": "GIV\u0112ON",
     "album": "Heartbreak Anniversary",
     "genre": "r&b",
     "energy": 0.49,
@@ -12471,7 +12471,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "GIVĒON - Heartbreak Anniversary",
+    "search_query": "GIV\u0112ON - Heartbreak Anniversary",
     "duration_sec": 196,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12480,7 +12480,7 @@
   {
     "id": "trk_523",
     "title": "TWENTIES",
-    "artist": "GIVĒON",
+    "artist": "GIV\u0112ON",
     "album": "BELOVED",
     "genre": "r&b",
     "energy": 0.5,
@@ -12495,7 +12495,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "GIVĒON - TWENTIES",
+    "search_query": "GIV\u0112ON - TWENTIES",
     "duration_sec": 171,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12504,7 +12504,7 @@
   {
     "id": "trk_524",
     "title": "Like I Want You",
-    "artist": "GIVĒON",
+    "artist": "GIV\u0112ON",
     "album": "TAKE TIME",
     "genre": "r&b",
     "energy": 0.52,
@@ -12519,7 +12519,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "GIVĒON - Like I Want You",
+    "search_query": "GIV\u0112ON - Like I Want You",
     "duration_sec": 260,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12768,7 +12768,7 @@
   {
     "id": "trk_535",
     "title": "So Good (feat. Kendrick Lamar)",
-    "artist": "Jhené Aiko",
+    "artist": "Jhen\u00e9 Aiko",
     "album": "Westside Whimsy",
     "genre": "r&b",
     "energy": 0.49,
@@ -12783,7 +12783,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Jhené Aiko - So Good (feat. Kendrick Lamar)",
+    "search_query": "Jhen\u00e9 Aiko - So Good (feat. Kendrick Lamar)",
     "duration_sec": 237,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12792,7 +12792,7 @@
   {
     "id": "trk_536",
     "title": "Sativa",
-    "artist": "Jhené Aiko",
+    "artist": "Jhen\u00e9 Aiko",
     "album": "Trip",
     "genre": "r&b",
     "energy": 0.49,
@@ -12807,7 +12807,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Jhené Aiko - Sativa",
+    "search_query": "Jhen\u00e9 Aiko - Sativa",
     "duration_sec": 276,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -12816,7 +12816,7 @@
   {
     "id": "trk_537",
     "title": "Stay Ready (What A Life)",
-    "artist": "Jhené Aiko",
+    "artist": "Jhen\u00e9 Aiko",
     "album": "Sail Out",
     "genre": "r&b",
     "energy": 0.54,
@@ -12831,7 +12831,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Jhené Aiko - Stay Ready (What A Life)",
+    "search_query": "Jhen\u00e9 Aiko - Stay Ready (What A Life)",
     "duration_sec": 382,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -13344,7 +13344,7 @@
   {
     "id": "trk_559",
     "title": "Empire State Of Mind",
-    "artist": "JAŸ-Z",
+    "artist": "JA\u0178-Z",
     "album": "The Blueprint 3",
     "genre": "r&b",
     "energy": 0.52,
@@ -13359,7 +13359,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "JAŸ-Z - Empire State Of Mind",
+    "search_query": "JA\u0178-Z - Empire State Of Mind",
     "duration_sec": 276,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -13920,7 +13920,7 @@
   {
     "id": "trk_583",
     "title": "Sirens",
-    "artist": "Ludwig Göransson",
+    "artist": "Ludwig G\u00f6ransson",
     "album": "The Odyssey (Original Motion Picture Soundtrack)",
     "genre": "r&b",
     "energy": 0.53,
@@ -13935,7 +13935,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Ludwig Göransson - Sirens",
+    "search_query": "Ludwig G\u00f6ransson - Sirens",
     "duration_sec": 159,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -13968,7 +13968,7 @@
   {
     "id": "trk_585",
     "title": "That's Why I Love You (feat. Bruno Mars)",
-    "artist": "Victoria Monét",
+    "artist": "Victoria Mon\u00e9t",
     "album": "Frequency Of Love",
     "genre": "r&b",
     "energy": 0.54,
@@ -13983,7 +13983,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Victoria Monét - That's Why I Love You (feat. Bruno Mars)",
+    "search_query": "Victoria Mon\u00e9t - That's Why I Love You (feat. Bruno Mars)",
     "duration_sec": 278,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -13992,7 +13992,7 @@
   {
     "id": "trk_586",
     "title": "See You In My Dreams (feat. SZA)",
-    "artist": "Victoria Monét",
+    "artist": "Victoria Mon\u00e9t",
     "album": "Frequency Of Love",
     "genre": "r&b",
     "energy": 0.48,
@@ -14007,7 +14007,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Victoria Monét - See You In My Dreams (feat. SZA)",
+    "search_query": "Victoria Mon\u00e9t - See You In My Dreams (feat. SZA)",
     "duration_sec": 158,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -14016,7 +14016,7 @@
   {
     "id": "trk_587",
     "title": "We Might Even Be Falling In Love (Interlude)",
-    "artist": "Victoria Monét",
+    "artist": "Victoria Mon\u00e9t",
     "album": "JAGUAR",
     "genre": "r&b",
     "energy": 0.51,
@@ -14031,7 +14031,7 @@
       "r&b",
       "soul"
     ],
-    "search_query": "Victoria Monét - We Might Even Be Falling In Love (Interlude)",
+    "search_query": "Victoria Mon\u00e9t - We Might Even Be Falling In Love (Interlude)",
     "duration_sec": 51,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -14593,7 +14593,7 @@
     "id": "trk_611",
     "title": "Kupla",
     "artist": "Ida Paul & Kalle Lindroth",
-    "album": "Nää kaikki kertoo susta",
+    "album": "N\u00e4\u00e4 kaikki kertoo susta",
     "genre": "lofi",
     "energy": 0.33,
     "valence": 0.43,
@@ -14687,7 +14687,7 @@
   },
   {
     "id": "trk_615",
-    "title": "새벽한시 (1AM)",
+    "title": "\uc0c8\ubcbd\ud55c\uc2dc (1AM)",
     "artist": "TAEYANG",
     "album": "RISE",
     "genre": "lofi",
@@ -14703,7 +14703,7 @@
       "study",
       "acoustic"
     ],
-    "search_query": "TAEYANG - 새벽한시 (1AM)",
+    "search_query": "TAEYANG - \uc0c8\ubcbd\ud55c\uc2dc (1AM)",
     "duration_sec": 191,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -14711,9 +14711,9 @@
   },
   {
     "id": "trk_616",
-    "title": "Biosphère",
+    "title": "Biosph\u00e8re",
     "artist": "Miss Monique",
-    "album": "Biosphère",
+    "album": "Biosph\u00e8re",
     "genre": "ambient",
     "energy": 0.12,
     "valence": 0.22,
@@ -14727,7 +14727,7 @@
       "night",
       "gloomy"
     ],
-    "search_query": "Miss Monique - Biosphère",
+    "search_query": "Miss Monique - Biosph\u00e8re",
     "duration_sec": 224,
     "last_played_timestamp": null,
     "play_count": 0,
@@ -15335,7 +15335,7 @@
   },
   {
     "id": "trk_642",
-    "title": "Marea (we’ve lost dancing)",
+    "title": "Marea (we\u2019ve lost dancing)",
     "artist": "Fred again..",
     "album": "Actual Life (April 14 - December 17 2020)",
     "genre": "electronic",
@@ -15351,7 +15351,7 @@
       "peak",
       "joyful"
     ],
-    "search_query": "Fred again.. - Marea (we’ve lost dancing)",
+    "search_query": "Fred again.. - Marea (we\u2019ve lost dancing)",
     "duration_sec": 285,
     "last_played_timestamp": null,
     "play_count": 0,

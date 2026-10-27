@@ -190,6 +190,7 @@ class PlaywrightRPAExecutor:
         weather_condition: str,
         time_block: str,
         temperature: float,
+        cover_image_path: Optional[str] = "data/current_cover.jpg",
     ) -> Dict[str, Any]:
         """
         Automated Headless Rebuild Mode:
@@ -198,7 +199,7 @@ class PlaywrightRPAExecutor:
         2. Verifies session authenticity.
         3. Cleanses or synchronizes target playlist.
         4. Injects selected tracks into playlist.
-        5. Updates atmospheric metadata.
+        5. Updates atmospheric metadata and dynamic cover art.
         6. Closes browser completely to release all RAM.
         """
         start_time = time.time()
@@ -246,8 +247,15 @@ class PlaywrightRPAExecutor:
                 # Step 3: Fast-track playlist sync / replacement
                 tracks_added = self._sync_tracks_to_playlist(page, tracks)
 
-                # Step 4: Update Playlist Metadata
-                self._update_playlist_metadata(page, mood_name, weather_condition, time_block, temperature)
+                # Step 4: Update Playlist Metadata & Dynamic Cover Art
+                self._update_playlist_metadata(
+                    page,
+                    mood_name,
+                    weather_condition,
+                    time_block,
+                    temperature,
+                    cover_image_path=cover_image_path,
+                )
 
                 elapsed = round(time.time() - start_time, 2)
                 is_success = tracks_added > 0
@@ -554,17 +562,22 @@ class PlaywrightRPAExecutor:
         weather: str,
         time_block: str,
         temperature: float,
+        cover_image_path: Optional[str] = "data/current_cover.jpg",
     ) -> None:
-        """Updates playlist description with real-time weather and mood notes."""
+        """Updates playlist description with real-time weather and mood notes and attaches cover art."""
         edit_trigger = self.selectors["playlist_view"]["edit_details_trigger"]
         desc_input = self.selectors["playlist_view"]["edit_description_textarea"]
         save_btn = self.selectors["playlist_view"]["edit_save_button"]
+        cover_input_sel = self.selectors["playlist_view"].get(
+            "cover_image_input",
+            "input[data-testid='playlist-edit-details-image-input'], input[type='file'][accept*='image']",
+        )
 
         try:
             trigger = page.locator(edit_trigger).first
             if trigger.is_visible(timeout=2500):
                 trigger.click()
-                time.sleep(0.4)
+                time.sleep(0.5)
 
                 desc_box = page.locator(desc_input).first
                 if desc_box.is_visible(timeout=2500):
@@ -573,10 +586,85 @@ class PlaywrightRPAExecutor:
                         f"({temperature:+.1f}°C). Atmospheric Mood: {mood_name}."
                     )
                     desc_box.fill(description_text)
-                    page.locator(save_btn).first.click()
                     self.logger.info("Updated playlist description: '%s'", description_text)
+
+                # Cover art upload if available
+                if cover_image_path:
+                    try:
+                        cover_file = Path(cover_image_path).resolve()
+                        if cover_file.exists():
+                            file_input = page.locator(cover_input_sel).first
+                            file_input.set_input_files(str(cover_file), timeout=4000)
+                            self.logger.info("Attached cover art image to modal: %s", cover_file.name)
+                            time.sleep(0.8)
+                    except Exception as img_exc:
+                        self.logger.warning("Cover art attachment skipped (%s). Continuing with tracks save.", img_exc)
+
+                save_locator = page.locator(save_btn).first
+                if save_locator.is_visible(timeout=2500):
+                    save_locator.click()
+                    self.logger.info("Saved playlist details.")
         except Exception as exc:
             self.logger.debug("Playlist metadata update bypassed: %s", exc)
+
+    def upload_cover_art(
+        self,
+        page: Page,
+        cover_image_path: str = "data/current_cover.jpg",
+    ) -> bool:
+        """
+        Uploads dynamic cover art to Spotify playlist via edit details modal.
+
+        Guarantees:
+        - Uses Playwright's `page.set_input_files(selector, file_path)` on the hidden
+          `<input type="file" accept="image/*">` element inside playlist edit modal.
+        - Dedicated `try...except` block: if platform UI blocks image upload or selector fails,
+          logs a warning and continues without crashing.
+        """
+        cover_file = Path(cover_image_path).resolve()
+        if not cover_file.exists():
+            self.logger.warning("Cover art file not found at %s. Skipping cover upload.", cover_file)
+            return False
+
+        file_input_sel = self.selectors["playlist_view"].get(
+            "cover_image_input",
+            "input[data-testid='playlist-edit-details-image-input'], input[type='file'][accept*='image']",
+        )
+        edit_trigger = self.selectors["playlist_view"]["edit_details_trigger"]
+        edit_modal_sel = self.selectors["playlist_view"].get(
+            "edit_modal",
+            "div[data-testid='playlist-edit-details-modal'], div[role='dialog']",
+        )
+        save_btn = self.selectors["playlist_view"]["edit_save_button"]
+
+        try:
+            self.logger.info("Starting standalone cover art upload for: %s", cover_file.name)
+            modal = page.locator(edit_modal_sel).first
+            opened_modal = False
+
+            if not modal.is_visible(timeout=1500):
+                trigger = page.locator(edit_trigger).first
+                if trigger.is_visible(timeout=2500):
+                    trigger.click()
+                    opened_modal = True
+                    time.sleep(0.5)
+
+            input_locator = page.locator(file_input_sel).first
+            input_locator.set_input_files(str(cover_file), timeout=4000)
+            self.logger.info("Cover art file dispatched to input selector.")
+            time.sleep(0.8)
+
+            if opened_modal:
+                save_locator = page.locator(save_btn).first
+                if save_locator.is_visible(timeout=2500):
+                    save_locator.click()
+                    time.sleep(1.0)
+                    self.logger.info("Cover art saved to playlist.")
+
+            return True
+        except Exception as exc:
+            self.logger.warning("Cover art upload failed (%s). Playlist tracks remain unaffected.", exc)
+            return False
 
     def _capture_failure_screenshot(self, page: Optional[Page]) -> None:
         """Saves a timestamped screenshot on automation failure for diagnosis."""
