@@ -11,6 +11,7 @@ Architectural Guarantees:
 
 from __future__ import annotations
 
+import re
 import json
 import time
 import logging
@@ -439,46 +440,58 @@ class PlaywrightRPAExecutor:
                     try:
                         # 1. Direct clear of in-playlist search box
                         search_input.fill("")
-                        time.sleep(0.2)
+                        time.sleep(0.15)
 
-                        # 2. Enter new track query
+                        # 2. Enter new track query and submit search
                         search_input.fill(query)
-                        time.sleep(1.2)
-
-                        # 3. Locate verified Add button strictly in search results matching title or artist
-                        target_row = None
-
-                        # Scoped strictly to search result rows containing an Add button (never playlist grid or recommendations)
-                        scoped_title_selector = f"div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button']):has-text('{trk.title}')"
                         try:
-                            matching_row = page.locator(scoped_title_selector).first
-                            if matching_row.is_visible(timeout=2500):
-                                target_row = matching_row
+                            search_input.press("Enter")
                         except Exception:
                             pass
 
-                        # Secondary match: by artist name if title has variant spelling or remaster tag
-                        if not target_row:
-                            try:
-                                scoped_artist_selector = f"div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button']):has-text('{trk.artist}')"
-                                matching_artist_row = page.locator(scoped_artist_selector).first
-                                if matching_artist_row.is_visible(timeout=1500):
-                                    target_row = matching_artist_row
-                            except Exception:
-                                pass
+                        # 3. Normalized keywords for reliable matching without CSS selector syntax errors
+                        clean_title = re.sub(r"[^\w\s]", "", trk.title).strip().lower()
+                        clean_artist = re.sub(r"[^\w\s]", "", trk.artist).strip().lower()
 
-                        # Fallback: check first search result row, BUT ensure it isn't a duplicate of already added tracks
-                        if not target_row:
-                            try:
-                                first_row = page.locator("div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button'])").first
-                                if first_row.is_visible(timeout=1500):
-                                    row_text = first_row.inner_text().lower()
-                                    if not any(et in row_text for et in existing_titles):
-                                        target_row = first_row
-                                    else:
+                        target_row = None
+                        row_locator = page.locator("div[data-testid='tracklist-row']:has(button[data-testid='add-to-playlist-button'])")
+
+                        # Poll for up to 2.4s (6 x 400ms) for Spotify's search results to refresh
+                        for attempt in range(6):
+                            time.sleep(0.4)
+                            count = row_locator.count()
+                            if count == 0:
+                                continue
+
+                            # First priority: check if any visible search row matches artist or title
+                            for r_idx in range(min(count, 5)):
+                                try:
+                                    row = row_locator.nth(r_idx)
+                                    row_text = row.inner_text().lower()
+                                    clean_row = re.sub(r"[^\w\s]", "", row_text)
+
+                                    if (clean_title and clean_title in clean_row) or (clean_artist and clean_artist in clean_row):
+                                        target_row = row
+                                        break
+                                except Exception:
+                                    continue
+
+                            if target_row:
+                                break
+
+                            # Second priority (fallback after at least 1.2s to let Spotify hydrate):
+                            # Ensure the top result is NOT an old track already added
+                            if attempt >= 2:
+                                try:
+                                    first_candidate = row_locator.first
+                                    first_text = first_candidate.inner_text().lower()
+                                    if not any(et in first_text for et in existing_titles):
+                                        target_row = first_candidate
+                                        break
+                                    elif attempt == 5:
                                         self.logger.warning("  [%02d/%02d] Search result contains already-added track. Skipping fallback to avoid duplicate.", idx, len(tracks))
-                            except Exception:
-                                pass
+                                except Exception:
+                                    pass
 
                         if target_row:
                             btn = target_row.locator("button[data-testid='add-to-playlist-button']").first
