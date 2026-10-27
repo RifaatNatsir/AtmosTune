@@ -137,12 +137,14 @@ def run_atmostune_cycle(
     force: bool = False,
     dry_run: bool = False,
     mood_override: Optional[str] = None,
+    genre_filter: Optional[str] = None,
+    tag_filter: Optional[str] = None,
     logger: Optional[logging.Logger] = None,
 ) -> Dict[str, Any]:
     """
     Executes a single end-to-end AtmosTune run-and-kill cycle:
     1. Fetches environmental context.
-    2. Matches target mood (or applies mood override).
+    2. Matches target mood (or applies mood / genre / hits override).
     3. Evaluates decision engine (skips browser if conditions are static).
     4. Selects tracks with anti-fatigue exponential decay and narrative curve.
     5. Injects tracks into Spotify via headless Playwright.
@@ -188,6 +190,33 @@ def run_atmostune_cycle(
                 "preferred_genres": ["ambient", "indie", "electronic"],
             }
         log.info("Applied manual mood override: '%s'", mood_name)
+    elif tag_filter == "hits_indo":
+        mood_name = "Top Hits Indonesia"
+        matched_mood = {
+            "mood_name": mood_name,
+            "description": "Trending chart toppers & popular Indonesian hits",
+            "target_energy": 0.75,
+            "target_valence": 0.70,
+            "preferred_genres": ["indopop", "pop", "indie"],
+        }
+    elif tag_filter == "hits_global":
+        mood_name = "Global Top Hits"
+        matched_mood = {
+            "mood_name": mood_name,
+            "description": "Worldwide chart toppers & viral global bangers",
+            "target_energy": 0.78,
+            "target_valence": 0.72,
+            "preferred_genres": ["pop", "dance", "electronic"],
+        }
+    elif genre_filter:
+        mood_name = f"{genre_filter.title()} Sound"
+        matched_mood = {
+            "mood_name": mood_name,
+            "description": f"Curated selection strictly for genre: {genre_filter.title()}",
+            "target_energy": matched_mood.get("target_energy", 0.50),
+            "target_valence": matched_mood.get("target_valence", 0.50),
+            "preferred_genres": [genre_filter],
+        }
     else:
         mood_name = matched_mood.get("mood_name", "Atmospheric Drift")
 
@@ -204,7 +233,7 @@ def run_atmostune_cycle(
     should_run, reason = context_fetcher.should_trigger_update(
         current_context=context,
         state=state,
-        force=force or bool(mood_override),
+        force=force or bool(mood_override) or bool(genre_filter) or bool(tag_filter),
     )
 
     if not should_run and not dry_run:
@@ -234,6 +263,8 @@ def run_atmostune_cycle(
         target_mood=matched_mood,
         weather_condition=context.condition,
         update_state=not dry_run,
+        genre_filter=genre_filter,
+        tag_filter=tag_filter,
     )
 
     if not curated_tracks:
@@ -369,6 +400,19 @@ def main() -> int:
         type=str,
         default=None,
         help="Manually force a specific mood from the matrix (e.g. 'Chill Twilight').",
+    )
+    parser.add_argument(
+        "--genre",
+        type=str,
+        default=None,
+        help="Target a specific musical genre (e.g. 'indopop', 'pop', 'indie', 'lofi', 'synthwave').",
+    )
+    parser.add_argument(
+        "--hits",
+        type=str,
+        default=None,
+        choices=["indo", "global", "viral"],
+        help="Generate playlist directly from top trending hits ('indo', 'global', or 'viral').",
     )
     parser.add_argument(
         "--clear",
@@ -529,11 +573,21 @@ def main() -> int:
 
     # 5. Standard Run-and-Kill Execution Cycle
     try:
+        tag_filter = None
+        if args.hits == "indo":
+            tag_filter = "hits_indo"
+        elif args.hits == "global":
+            tag_filter = "hits_global"
+        elif args.hits == "viral":
+            tag_filter = "viral"
+
         res = run_atmostune_cycle(
             config=config,
-            force=args.force,
+            force=args.force or bool(args.hits) or bool(args.genre),
             dry_run=args.dry_run,
             mood_override=args.mood,
+            genre_filter=args.genre,
+            tag_filter=tag_filter,
             logger=logger,
         )
         return 0 if res.get("success") else 1

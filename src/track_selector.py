@@ -185,9 +185,12 @@ class SmartTrackSelector:
         weather_condition: str,
         count: Optional[int] = None,
         update_state: bool = True,
+        genre_filter: Optional[str] = None,
+        tag_filter: Optional[str] = None,
     ) -> List[Track]:
         """
         Selects top candidate tracks and sequences them according to the configured energy curve.
+        Supports optional genre_filter and tag_filter.
         """
         if not self.tracks:
             self.logger.warning("No tracks available in database.")
@@ -198,7 +201,7 @@ class SmartTrackSelector:
 
         target_energy = float(target_mood.get("target_energy", 0.5))
         target_valence = float(target_mood.get("target_valence", 0.5))
-        preferred_genres = target_mood.get("preferred_genres", [])
+        preferred_genres = [genre_filter] if genre_filter else target_mood.get("preferred_genres", [])
 
         now = time.time()
         for track in self.tracks:
@@ -210,6 +213,21 @@ class SmartTrackSelector:
                 weather_condition=weather_condition,
                 current_time=now,
             )
+
+            # Apply targeted priority multiplier for explicit genre / tag filters
+            if genre_filter:
+                g_low = genre_filter.lower()
+                if g_low in track.genre.lower() or any(g_low in tg.lower() for tg in track.tags):
+                    track.calculated_score = round(track.calculated_score * 3.0, 4)
+                else:
+                    track.calculated_score = round(track.calculated_score * 0.1, 4)
+
+            if tag_filter:
+                t_low = tag_filter.lower()
+                if any(t_low in tg.lower() for tg in track.tags) or t_low in track.genre.lower():
+                    track.calculated_score = round(track.calculated_score * 3.0, 4)
+                else:
+                    track.calculated_score = round(track.calculated_score * 0.1, 4)
 
         # Sort candidate pool descending by composite fitness score with strict deduplication
         pool = sorted(self.tracks, key=lambda t: t.calculated_score, reverse=True)

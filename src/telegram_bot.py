@@ -85,14 +85,17 @@ class AtmosTelegramBot:
         keyboard = types.InlineKeyboardMarkup(row_width=2)
         btn_rebuild = types.InlineKeyboardButton("🔄 Rebuild Playlist", callback_data="btn_rebuild")
         btn_weather = types.InlineKeyboardButton("🌦️ Real Weather", callback_data="btn_weather")
+        btn_hits = types.InlineKeyboardButton("🔥 Top Hits", callback_data="btn_hits_menu")
+        btn_genre = types.InlineKeyboardButton("🎸 Choose Genre", callback_data="btn_genre_menu")
+        btn_mood = types.InlineKeyboardButton("🎨 Choose Mood", callback_data="btn_mood_menu")
         btn_preview = types.InlineKeyboardButton("🎵 Preview Tracks", callback_data="btn_preview")
         btn_status = types.InlineKeyboardButton("📊 System Status", callback_data="btn_status")
-        btn_mood = types.InlineKeyboardButton("🎨 Choose Mood", callback_data="btn_mood_menu")
         btn_clear = types.InlineKeyboardButton("🗑️ Clear Playlist", callback_data="btn_clear_prompt")
 
         keyboard.add(btn_rebuild, btn_weather)
-        keyboard.add(btn_preview, btn_status)
-        keyboard.add(btn_mood, btn_clear)
+        keyboard.add(btn_hits, btn_genre)
+        keyboard.add(btn_mood, btn_preview)
+        keyboard.add(btn_status, btn_clear)
         return keyboard
 
     def _get_mood_keyboard(self) -> types.InlineKeyboardMarkup:
@@ -116,6 +119,44 @@ class AtmosTelegramBot:
         keyboard.add(types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data="btn_back"))
         return keyboard
 
+    def _get_hits_keyboard(self) -> types.InlineKeyboardMarkup:
+        """Builds selection menu for top trending hits."""
+        keyboard = types.InlineKeyboardMarkup(row_width=2)
+        hits = [
+            ("🇮🇩 Top Hits Indonesia", "indo"),
+            ("🌍 Global Top Hits", "global"),
+            ("📈 Viral Indonesia", "viral"),
+            ("✨ Indo Pop Hits", "indopop"),
+        ]
+        buttons = [
+            types.InlineKeyboardButton(label, callback_data=f"set_hits:{name}")
+            for label, name in hits
+        ]
+        keyboard.add(*buttons)
+        keyboard.add(types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data="btn_back"))
+        return keyboard
+
+    def _get_genre_keyboard(self) -> types.InlineKeyboardMarkup:
+        """Builds selection menu for specific musical genres."""
+        keyboard = types.InlineKeyboardMarkup(row_width=2)
+        genres = [
+            ("🇮🇩 Indo Pop", "indopop"),
+            ("🎵 Global Pop", "pop"),
+            ("🎸 Indie & Rock", "indie"),
+            ("☕ Lo-Fi & Chill", "lofi"),
+            ("⚡ Synthwave & EDM", "synthwave"),
+            ("🌧️ Ambient & Sleep", "ambient"),
+            ("🎻 Classical & Piano", "classical"),
+            ("🎧 R&B / Chillwave", "r&b"),
+        ]
+        buttons = [
+            types.InlineKeyboardButton(label, callback_data=f"set_genre:{name}")
+            for label, name in genres
+        ]
+        keyboard.add(*buttons)
+        keyboard.add(types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data="btn_back"))
+        return keyboard
+
     def _register_handlers(self) -> None:
         """Registers all bot slash command handlers and inline callback queries."""
 
@@ -132,11 +173,14 @@ class AtmosTelegramBot:
                 "*Available Controls:*\n"
                 "• 🔄 *Rebuild Playlist*: Headless RPA update in <30s\n"
                 "• 🌦️ *Real Weather*: Live local meteorological readings\n"
-                "• 🎵 *Preview Tracks*: Inspect next curated songs & energy\n"
+                "• 🔥 *Top Hits*: Indonesian & Global trending chart toppers\n"
+                "• 🎸 *Choose Genre*: Indo Pop, Pop, Indie, Lofi, Synthwave, dll.\n"
                 "• 🎨 *Choose Mood*: Manually override the atmospheric mood\n"
+                "• 🎵 *Preview Tracks*: Inspect next curated songs & energy\n"
                 "• 📊 *System Status*: Audit cooldown & run history\n"
+                "• 📥 */import <nama/url>*: Download lagu baru langsung dari Spotify\n"
                 "• 🗑️ *Clear Playlist*: Empty the target Spotify playlist\n\n"
-                "Use the buttons below or slash commands like `/rebuild` or `/weather`."
+                "Use the interactive buttons below or slash commands like `/hits`, `/genre`, `/rebuild`, or `/weather`."
             )
             self.bot.send_message(chat_id, welcome_text, reply_markup=self._get_main_keyboard())
 
@@ -153,6 +197,60 @@ class AtmosTelegramBot:
                 self._send_unauthorized_msg(message.chat.id)
                 return
             self._send_weather_info(message.chat.id)
+
+        @self.bot.message_handler(commands=["hits"])
+        def handle_hits_cmd(message: types.Message):
+            if not self._is_authorized(message.chat.id):
+                self._send_unauthorized_msg(message.chat.id)
+                return
+            parts = message.text.split(maxsplit=1)
+            if len(parts) > 1:
+                hit_type = parts[1].strip().lower()
+                tag = "hits_indo" if "indo" in hit_type else ("hits_global" if "global" in hit_type else hit_type)
+                self._trigger_rebuild_async(message.chat.id, tag_filter=tag)
+            else:
+                self.bot.send_message(
+                    message.chat.id,
+                    "🔥 *Pilih Tangga Lagu Hits Terpopuler:*",
+                    reply_markup=self._get_hits_keyboard(),
+                )
+
+        @self.bot.message_handler(commands=["genre"])
+        def handle_genre_cmd(message: types.Message):
+            if not self._is_authorized(message.chat.id):
+                self._send_unauthorized_msg(message.chat.id)
+                return
+            parts = message.text.split(maxsplit=1)
+            if len(parts) > 1:
+                genre_name = parts[1].strip().lower()
+                self._trigger_rebuild_async(message.chat.id, genre_filter=genre_name)
+            else:
+                self.bot.send_message(
+                    message.chat.id,
+                    "🎸 *Pilih Genre Musik yang Ingin Didengarkan:*",
+                    reply_markup=self._get_genre_keyboard(),
+                )
+
+        @self.bot.message_handler(commands=["import"])
+        def handle_import_cmd(message: types.Message):
+            if not self._is_authorized(message.chat.id):
+                self._send_unauthorized_msg(message.chat.id)
+                return
+            parts = message.text.split(maxsplit=1)
+            if len(parts) > 1:
+                target = parts[1].strip()
+                self._trigger_import_async(message.chat.id, target)
+            else:
+                self.bot.send_message(
+                    message.chat.id,
+                    "📥 *Import Musik Baru ke Database:*\n\n"
+                    "Ketik: `/import <URL Playlist/Album atau Nama Artis/Judul>`\n\n"
+                    "*Contoh:*\n"
+                    "• `/import Bernadya`\n"
+                    "• `/import Tulus`\n"
+                    "• `/import https://open.spotify.com/playlist/...`\n\n"
+                    "Lagu-lagu baru akan otomatis dianalisis dan dimasukkan ke stok database AtmosTune!",
+                )
 
         @self.bot.message_handler(commands=["preview"])
         def handle_preview_cmd(message: types.Message):
@@ -206,6 +304,17 @@ class AtmosTelegramBot:
                 self._trigger_rebuild_async(chat_id)
             elif call.data == "btn_weather":
                 self._send_weather_info(chat_id)
+            elif call.data == "btn_hits_menu":
+                self.bot.send_message(chat_id, "🔥 *Pilih Tangga Lagu Hits Terpopuler:*", reply_markup=self._get_hits_keyboard())
+            elif call.data == "btn_genre_menu":
+                self.bot.send_message(chat_id, "🎸 *Pilih Genre Musik yang Ingin Didengarkan:*", reply_markup=self._get_genre_keyboard())
+            elif call.data.startswith("set_hits:"):
+                hit_type = call.data.split(":", 1)[1]
+                tag = "hits_indo" if hit_type in ("indo", "indopop") else ("hits_global" if hit_type == "global" else hit_type)
+                self._trigger_rebuild_async(chat_id, tag_filter=tag)
+            elif call.data.startswith("set_genre:"):
+                genre_name = call.data.split(":", 1)[1]
+                self._trigger_rebuild_async(chat_id, genre_filter=genre_name)
             elif call.data == "btn_preview":
                 self._send_preview(chat_id)
             elif call.data == "btn_status":
@@ -383,7 +492,13 @@ class AtmosTelegramBot:
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    def _trigger_rebuild_async(self, chat_id: int, mood_override: Optional[str] = None) -> None:
+    def _trigger_rebuild_async(
+        self,
+        chat_id: int,
+        mood_override: Optional[str] = None,
+        genre_filter: Optional[str] = None,
+        tag_filter: Optional[str] = None,
+    ) -> None:
         """Spawns background thread to execute full headless RPA rebuild."""
         with self._busy_lock:
             if self._is_busy:
@@ -391,30 +506,32 @@ class AtmosTelegramBot:
                 return
             self._is_busy = True
 
-        status_text = (
-            f"⏳ *Initiating Rebuild for mood '{mood_override}'...*"
-            if mood_override
-            else "⏳ *Initiating Rebuild for current real-time atmosphere...*"
-        )
+        if tag_filter == "hits_indo":
+            status_text = "⏳ *Menyiapkan playlist Top Hits Indonesia...*"
+        elif tag_filter == "hits_global":
+            status_text = "⏳ *Menyiapkan playlist Global Top Hits...*"
+        elif tag_filter == "viral":
+            status_text = "⏳ *Menyiapkan playlist Viral Indonesia...*"
+        elif genre_filter:
+            status_text = f"⏳ *Menyiapkan playlist genre '{genre_filter.title()}'...*"
+        elif mood_override:
+            status_text = f"⏳ *Initiating Rebuild for mood '{mood_override}'...*"
+        else:
+            status_text = "⏳ *Initiating Rebuild for current real-time atmosphere...*"
+
         status_msg = self.bot.send_message(chat_id, status_text)
 
         def _worker():
             try:
-                if self.rebuild_callback:
-                    res = self.rebuild_callback(
-                        config=self.config,
-                        force=True,
-                        mood_override=mood_override,
-                        logger=self.logger,
-                    )
-                else:
-                    from main import run_atmostune_cycle
-                    res = run_atmostune_cycle(
-                        config=self.config,
-                        force=True,
-                        mood_override=mood_override,
-                        logger=self.logger,
-                    )
+                from main import run_atmostune_cycle
+                res = run_atmostune_cycle(
+                    config=self.config,
+                    force=True,
+                    mood_override=mood_override,
+                    genre_filter=genre_filter,
+                    tag_filter=tag_filter,
+                    logger=self.logger,
+                )
 
                 if res.get("success"):
                     mood_name = res.get("mood_name", "Atmospheric Sound")
@@ -427,10 +544,10 @@ class AtmosTelegramBot:
 
                     reply_text = (
                         f"✅ *Spotify Playlist Rebuilt Successfully!*\n\n"
-                        f"🎨 *Mood*: *{mood_name}*\n"
+                        f"🎨 *Tema / Mood*: *{mood_name}*\n"
                         f"🌦️ *Atmosphere*: `{weather}` ({temp:+.1f}°C) • `{block}`\n"
                         f"🎵 *Tracks*: `{tracks_count}` tracks added in `{elapsed:.1f}s`\n\n"
-                        f"🔗 [Open 'MyAtmosTune' on Spotify]({playlist_url})"
+                        f"🔗 [Buka 'MyAtmosTune' di Spotify]({playlist_url})"
                     )
                     self.bot.edit_message_text(
                         reply_text,
@@ -461,6 +578,49 @@ class AtmosTelegramBot:
             finally:
                 with self._busy_lock:
                     self._is_busy = False
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _trigger_import_async(self, chat_id: int, target: str) -> None:
+        """Spawns background thread to import tracks from Spotify into database."""
+        status_msg = self.bot.send_message(chat_id, f"🔍 *Mencari dan mengimpor lagu untuk:* `{target}`...")
+
+        def _worker():
+            try:
+                from src.spotify_importer import SpotifyImporter
+                spotify_cfg = self.config.get("spotify_api", {})
+                importer = SpotifyImporter(
+                    client_id=spotify_cfg.get("client_id"),
+                    client_secret=spotify_cfg.get("client_secret"),
+                    db_path="./data/tracks_db.json",
+                    logger=self.logger,
+                )
+                res = importer.import_from_url(target, limit=20)
+                if res.get("success"):
+                    added = res.get("added_count", 0)
+                    total = res.get("total_in_db", 0)
+                    self.bot.edit_message_text(
+                        f"✅ *Import Berhasil!*\n\n"
+                        f"• Berhasil menambahkan: `{added}` lagu baru\n"
+                        f"• Total stok di database: `{total}` lagu\n\n"
+                        f"Lagu-lagu ini sekarang siap dipilih ke playlist Spotify Anda!",
+                        chat_id=chat_id,
+                        message_id=status_msg.message_id,
+                        reply_markup=self._get_main_keyboard(),
+                    )
+                else:
+                    self.bot.edit_message_text(
+                        f"❌ *Gagal mengimpor*: `{res.get('message', 'Target tidak ditemukan')}`",
+                        chat_id=chat_id,
+                        message_id=status_msg.message_id,
+                    )
+            except Exception as exc:
+                self.logger.error("Import error: %s", exc)
+                self.bot.edit_message_text(
+                    f"❌ *Error saat import*: `{exc}`",
+                    chat_id=chat_id,
+                    message_id=status_msg.message_id,
+                )
 
         threading.Thread(target=_worker, daemon=True).start()
 

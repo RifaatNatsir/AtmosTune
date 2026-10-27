@@ -19,7 +19,7 @@
     "duration_sec": 243,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.2707
+    "calculated_score": 0.2416
   },
   {
     "id": "trk_002",
@@ -41,7 +41,7 @@
     "duration_sec": 237,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.4368
+    "calculated_score": 0.444
   },
   {
     "id": "trk_003",
@@ -63,7 +63,7 @@
     "duration_sec": 212,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.6259
+    "calculated_score": 0.5155
   },
   {
     "id": "trk_004",
@@ -85,7 +85,7 @@
     "duration_sec": 485,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.1402
+    "calculated_score": 0.1496
   },
   {
     "id": "trk_005",
@@ -107,7 +107,7 @@
     "duration_sec": 194,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3512
+    "calculated_score": 0.3131
   },
   {
     "id": "trk_006",
@@ -129,7 +129,7 @@
     "duration_sec": 138,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.4141
+    "calculated_score": 0.3831
   },
   {
     "id": "trk_007",
@@ -151,7 +151,7 @@
     "duration_sec": 171,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.0569
+    "calculated_score": 0.0759
   },
   {
     "id": "trk_008",
@@ -173,7 +173,7 @@
     "duration_sec": 315,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.4276
+    "calculated_score": 0.4576
   },
   {
     "id": "trk_009",
@@ -195,7 +195,7 @@
     "duration_sec": 302,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.2084
+    "calculated_score": 0.1791
   },
   {
     "id": "trk_010",
@@ -217,7 +217,7 @@
     "duration_sec": 236,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.0692
+    "calculated_score": 0.0923
   },
   {
     "id": "trk_011",
@@ -239,7 +239,7 @@
     "duration_sec": 331,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3699
+    "calculated_score": 0.3421
   },
   {
     "id": "trk_012",
@@ -261,7 +261,7 @@
     "duration_sec": 259,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.426
+    "calculated_score": 0.3525
   },
   {
     "id": "trk_013",
@@ -283,7 +283,7 @@
     "duration_sec": 337,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3756
+    "calculated_score": 0.3255
   },
   {
     "id": "trk_014",
@@ -305,7 +305,7 @@
     "duration_sec": 193,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3256
+    "calculated_score": 0.3483
   },
   {
     "id": "trk_015",
@@ -327,7 +327,7 @@
     "duration_sec": 230,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.2395
+    "calculated_score": 0.2757
   },
   {
     "id": "trk_016",
@@ -349,7 +349,7 @@
     "duration_sec": 358,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3464
+    "calculated_score": 0.2971
   },
   {
     "id": "trk_017",
@@ -371,7 +371,7 @@
     "duration_sec": 216,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.2116
+    "calculated_score": 0.2621
   },
   {
     "id": "trk_018",
@@ -393,7 +393,7 @@
     "duration_sec": 317,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.4845
+    "calculated_score": 0.6758
   },
   {
     "id": "trk_019",
@@ -415,7 +415,7 @@
     "duration_sec": 251,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.1076
+    "calculated_score": 0.1045
   },
   {
     "id": "trk_020",
@@ -437,7 +437,7 @@
     "duration_sec": 178,
     "last_played_timestamp": 1792923892.850041,
     "play_count": 13,
-    "calculated_score": 0.3445
+    "calculated_score": 0.3023
   },
   {
     "id": "trk_021",
@@ -461,12 +461,12 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4113
+    "calculated_score": 0.4944
   },
   {
     "id": "trk_022",
     "title": "Nicole Kidman",
-    "artist": "AD\u00c9LA",
+    "artist": "ADÉLA",
     "album": "PRIMA",
     "genre": "pop",
     "energy": 0.73,
@@ -481,11 +481,11 @@
       "peak",
       "joyful"
     ],
-    "search_query": "AD\u00c9LA - Nicole Kidman",
+    "search_query": "ADÉLA - Nicole Kidman",
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4634
+    "calculated_score": 0.5515
   },
   {
     "id": "trk_023",
@@ -509,7 +509,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3392
+    "calculated_score": 0.4133
   },
   {
     "id": "trk_024",
@@ -533,7 +533,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3392
+    "calculated_score": 0.4133
   },
   {
     "id": "trk_025",
@@ -557,7 +557,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.437
+    "calculated_score": 0.5227
   },
   {
     "id": "trk_026",
@@ -581,7 +581,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.518
+    "calculated_score": 0.6098
   },
   {
     "id": "trk_027",
@@ -605,7 +605,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.437
+    "calculated_score": 0.5227
   },
   {
     "id": "trk_028",
@@ -629,7 +629,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.437
+    "calculated_score": 0.5227
   },
   {
     "id": "trk_029",
@@ -653,7 +653,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4634
+    "calculated_score": 0.5515
   },
   {
     "id": "trk_030",
@@ -677,7 +677,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.518
+    "calculated_score": 0.6098
   },
   {
     "id": "trk_031",
@@ -699,9 +699,9 @@
     ],
     "search_query": "Fat Papi - STAY WITH YOU - PRODSHUSHY REMIX",
     "duration_sec": 159,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8838
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.7689
   },
   {
     "id": "trk_032",
@@ -725,7 +725,7 @@
     "duration_sec": 192,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9515
+    "calculated_score": 0.039
   },
   {
     "id": "trk_033",
@@ -749,7 +749,7 @@
     "duration_sec": 220,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
   },
   {
     "id": "trk_034",
@@ -773,7 +773,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.78
+    "calculated_score": 0.6894
   },
   {
     "id": "trk_035",
@@ -797,7 +797,7 @@
     "duration_sec": 250,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.78
+    "calculated_score": 0.6894
   },
   {
     "id": "trk_036",
@@ -821,7 +821,7 @@
     "duration_sec": 153,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 1.0097
+    "calculated_score": 0.0433
   },
   {
     "id": "trk_037",
@@ -843,9 +843,9 @@
     ],
     "search_query": "Restoring Rains - LoFi 2 Chill Rain",
     "duration_sec": 210,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7722
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7098
   },
   {
     "id": "trk_038",
@@ -867,9 +867,9 @@
     ],
     "search_query": "Restoring Rains - LoFi Chill Rain",
     "duration_sec": 120,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7722
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7098
   },
   {
     "id": "trk_039",
@@ -891,9 +891,9 @@
     ],
     "search_query": "aekasora - rainy day",
     "duration_sec": 221,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7722
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7098
   },
   {
     "id": "trk_040",
@@ -917,7 +917,7 @@
     "duration_sec": 165,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7386
+    "calculated_score": 0.67
   },
   {
     "id": "trk_041",
@@ -939,9 +939,9 @@
     ],
     "search_query": "prins - rainy morning",
     "duration_sec": 134,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.8114
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7617
   },
   {
     "id": "trk_042",
@@ -965,13 +965,13 @@
     "duration_sec": 128,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7561
+    "calculated_score": 0.6903
   },
   {
     "id": "trk_043",
-    "title": "\u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
-    "artist": "\u0433\u0440\u0438\u0438\u0432\u0430",
-    "album": "\u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
+    "title": "Мой стиль как бабушкины блинчики",
+    "artist": "гриива",
+    "album": "Мой стиль как бабушкины блинчики",
     "genre": "lofi",
     "energy": 0.31,
     "valence": 0.41,
@@ -985,11 +985,11 @@
       "study",
       "acoustic"
     ],
-    "search_query": "\u0433\u0440\u0438\u0438\u0432\u0430 - \u041c\u043e\u0439 \u0441\u0442\u0438\u043b\u044c \u043a\u0430\u043a \u0431\u0430\u0431\u0443\u0448\u043a\u0438\u043d\u044b \u0431\u043b\u0438\u043d\u0447\u0438\u043a\u0438",
+    "search_query": "гриива - Мой стиль как бабушкины блинчики",
     "duration_sec": 100,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9819
+    "calculated_score": 0.0418
   },
   {
     "id": "trk_044",
@@ -1013,7 +1013,7 @@
     "duration_sec": 88,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 1.0097
+    "calculated_score": 0.0433
   },
   {
     "id": "trk_045",
@@ -1035,9 +1035,9 @@
     ],
     "search_query": "Bboy Ninja - Versatility & Diversity",
     "duration_sec": 187,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7869
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7283
   },
   {
     "id": "trk_046",
@@ -1061,7 +1061,7 @@
     "duration_sec": 92,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7386
+    "calculated_score": 0.67
   },
   {
     "id": "trk_047",
@@ -1083,9 +1083,9 @@
     ],
     "search_query": "Ev's Lofi - Rain Flowing Love Lofi Chill",
     "duration_sec": 71,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.8114
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7617
   },
   {
     "id": "trk_048",
@@ -1107,9 +1107,9 @@
     ],
     "search_query": "Ev's Lofi - Wonderful Rain Lofi Chill",
     "duration_sec": 82,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.821
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7764
   },
   {
     "id": "trk_049",
@@ -1133,7 +1133,7 @@
     "duration_sec": 134,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7561
+    "calculated_score": 0.6903
   },
   {
     "id": "trk_050",
@@ -1157,7 +1157,7 @@
     "duration_sec": 204,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 1.0097
+    "calculated_score": 0.0433
   },
   {
     "id": "trk_051",
@@ -1181,7 +1181,7 @@
     "duration_sec": 323,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7722
+    "calculated_score": 0.7098
   },
   {
     "id": "trk_052",
@@ -1203,9 +1203,9 @@
     ],
     "search_query": "Michael Lopez - Prayer In The Valley",
     "duration_sec": 226,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7869
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7283
   },
   {
     "id": "trk_053",
@@ -1227,9 +1227,9 @@
     ],
     "search_query": "Xesario - Kopi Senang",
     "duration_sec": 161,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.8114
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7617
   },
   {
     "id": "trk_054",
@@ -1251,9 +1251,9 @@
     ],
     "search_query": "eazy msc - Blue",
     "duration_sec": 178,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.7869
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7283
   },
   {
     "id": "trk_055",
@@ -1275,13 +1275,13 @@
     ],
     "search_query": "Aeromist - Some Days",
     "duration_sec": 211,
-    "last_played_timestamp": 1792926517.8466046,
-    "play_count": 1,
-    "calculated_score": 0.821
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 2,
+    "calculated_score": 0.7764
   },
   {
     "id": "trk_056",
-    "title": "A Peaceful Mountain Village (From \u201cSuikoden II\u201d) - Acoustic Guitar",
+    "title": "A Peaceful Mountain Village (From “Suikoden II”) - Acoustic Guitar",
     "artist": "John Oeth",
     "album": "Video Game Guitar Covers, Vol. 4",
     "genre": "acoustic",
@@ -1297,11 +1297,11 @@
       "study",
       "acoustic"
     ],
-    "search_query": "John Oeth - A Peaceful Mountain Village (From \u201cSuikoden II\u201d) - Acoustic Guitar",
+    "search_query": "John Oeth - A Peaceful Mountain Village (From “Suikoden II”) - Acoustic Guitar",
     "duration_sec": 106,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8916
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.784
   },
   {
     "id": "trk_057",
@@ -1323,9 +1323,9 @@
     ],
     "search_query": "Acoustic Instrumental Collection - Peaceful",
     "duration_sec": 194,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8273
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.72
   },
   {
     "id": "trk_058",
@@ -1349,7 +1349,7 @@
     "duration_sec": 314,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7561
+    "calculated_score": 0.6903
   },
   {
     "id": "trk_059",
@@ -1373,7 +1373,7 @@
     "duration_sec": 297,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9227
+    "calculated_score": 0.0388
   },
   {
     "id": "trk_060",
@@ -1397,7 +1397,7 @@
     "duration_sec": 149,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9227
+    "calculated_score": 0.0388
   },
   {
     "id": "trk_061",
@@ -1421,7 +1421,7 @@
     "duration_sec": 184,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7386
+    "calculated_score": 0.67
   },
   {
     "id": "trk_062",
@@ -1443,9 +1443,9 @@
     ],
     "search_query": "Acoustic Garden - Happy Days",
     "duration_sec": 105,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8273
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.72
   },
   {
     "id": "trk_063",
@@ -1469,7 +1469,7 @@
     "duration_sec": 184,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7561
+    "calculated_score": 0.6903
   },
   {
     "id": "trk_064",
@@ -1491,9 +1491,9 @@
     ],
     "search_query": "Cecil Noss - Way Home",
     "duration_sec": 135,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8916
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.784
   },
   {
     "id": "trk_065",
@@ -1517,7 +1517,7 @@
     "duration_sec": 154,
     "last_played_timestamp": 1792926517.8466046,
     "play_count": 1,
-    "calculated_score": 0.7386
+    "calculated_score": 0.67
   },
   {
     "id": "trk_066",
@@ -1541,7 +1541,7 @@
     "duration_sec": 165,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9227
+    "calculated_score": 0.0388
   },
   {
     "id": "trk_067",
@@ -1565,7 +1565,7 @@
     "duration_sec": 199,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9529
+    "calculated_score": 0.0403
   },
   {
     "id": "trk_068",
@@ -1589,7 +1589,7 @@
     "duration_sec": 192,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9819
+    "calculated_score": 0.0418
   },
   {
     "id": "trk_069",
@@ -1613,7 +1613,7 @@
     "duration_sec": 143,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.309
+    "calculated_score": 0.3326
   },
   {
     "id": "trk_070",
@@ -1637,7 +1637,7 @@
     "duration_sec": 188,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4724
+    "calculated_score": 0.5175
   },
   {
     "id": "trk_071",
@@ -1661,7 +1661,7 @@
     "duration_sec": 169,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4219
+    "calculated_score": 0.4595
   },
   {
     "id": "trk_072",
@@ -1685,7 +1685,7 @@
     "duration_sec": 198,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4468
+    "calculated_score": 0.488
   },
   {
     "id": "trk_073",
@@ -1709,7 +1709,7 @@
     "duration_sec": 1097,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3978
+    "calculated_score": 0.432
   },
   {
     "id": "trk_074",
@@ -1733,11 +1733,11 @@
     "duration_sec": 92,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4985
+    "calculated_score": 0.5479
   },
   {
     "id": "trk_075",
-    "title": "what\u2019s wrong with me",
+    "title": "what’s wrong with me",
     "artist": "Olivia Rodrigo",
     "album": "you seem pretty sad for a girl so in love",
     "genre": "ambient",
@@ -1753,11 +1753,11 @@
       "night",
       "gloomy"
     ],
-    "search_query": "Olivia Rodrigo - what\u2019s wrong with me",
+    "search_query": "Olivia Rodrigo - what’s wrong with me",
     "duration_sec": 224,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4985
+    "calculated_score": 0.5479
   },
   {
     "id": "trk_076",
@@ -1781,7 +1781,7 @@
     "duration_sec": 325,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4219
+    "calculated_score": 0.4595
   },
   {
     "id": "trk_077",
@@ -1805,7 +1805,7 @@
     "duration_sec": 192,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4985
+    "calculated_score": 0.5479
   },
   {
     "id": "trk_078",
@@ -1829,7 +1829,7 @@
     "duration_sec": 236,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3517
+    "calculated_score": 0.3802
   },
   {
     "id": "trk_079",
@@ -1853,7 +1853,7 @@
     "duration_sec": 155,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3299
+    "calculated_score": 0.3558
   },
   {
     "id": "trk_080",
@@ -1877,7 +1877,7 @@
     "duration_sec": 203,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4219
+    "calculated_score": 0.4595
   },
   {
     "id": "trk_081",
@@ -1901,7 +1901,7 @@
     "duration_sec": 143,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3517
+    "calculated_score": 0.3802
   },
   {
     "id": "trk_082",
@@ -1925,7 +1925,7 @@
     "duration_sec": 128,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3978
+    "calculated_score": 0.432
   },
   {
     "id": "trk_083",
@@ -1949,7 +1949,7 @@
     "duration_sec": 171,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.3743
+    "calculated_score": 0.4056
   },
   {
     "id": "trk_084",
@@ -1973,7 +1973,7 @@
     "duration_sec": 180,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4985
+    "calculated_score": 0.5479
   },
   {
     "id": "trk_085",
@@ -1997,7 +1997,7 @@
     "duration_sec": 261,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.4219
+    "calculated_score": 0.4595
   },
   {
     "id": "trk_086",
@@ -2021,7 +2021,7 @@
     "duration_sec": 160,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.78
+    "calculated_score": 0.6894
   },
   {
     "id": "trk_087",
@@ -2045,7 +2045,7 @@
     "duration_sec": 127,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.7455
+    "calculated_score": 0.6621
   },
   {
     "id": "trk_088",
@@ -2069,7 +2069,7 @@
     "duration_sec": 271,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9515
+    "calculated_score": 0.039
   },
   {
     "id": "trk_089",
@@ -2093,7 +2093,7 @@
     "duration_sec": 331,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9179
+    "calculated_score": 0.0378
   },
   {
     "id": "trk_090",
@@ -2115,9 +2115,9 @@
     ],
     "search_query": "Biodrive - Neon City (Vip Remix)",
     "duration_sec": 301,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8838
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.7689
   },
   {
     "id": "trk_091",
@@ -2141,7 +2141,7 @@
     "duration_sec": 301,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
   },
   {
     "id": "trk_092",
@@ -2165,13 +2165,13 @@
     "duration_sec": 161,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.7455
+    "calculated_score": 0.6621
   },
   {
     "id": "trk_093",
     "title": "River of Light (Festival EDM Mix IX)",
     "artist": "GUGADJ",
-    "album": "River of Light \u2014 Vol. 1",
+    "album": "River of Light — Vol. 1",
     "genre": "synthwave",
     "energy": 0.65,
     "valence": 0.57,
@@ -2189,7 +2189,7 @@
     "duration_sec": 213,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9515
+    "calculated_score": 0.039
   },
   {
     "id": "trk_094",
@@ -2213,7 +2213,7 @@
     "duration_sec": 264,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
   },
   {
     "id": "trk_095",
@@ -2237,7 +2237,7 @@
     "duration_sec": 148,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9515
+    "calculated_score": 0.039
   },
   {
     "id": "trk_096",
@@ -2261,7 +2261,7 @@
     "duration_sec": 111,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
   },
   {
     "id": "trk_097",
@@ -2285,7 +2285,7 @@
     "duration_sec": 163,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
   },
   {
     "id": "trk_098",
@@ -2307,15 +2307,15 @@
     ],
     "search_query": "Synth.J - Neon Afterglow",
     "duration_sec": 237,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8838
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.7689
   },
   {
     "id": "trk_099",
     "title": "River of Light (Pop EDM Mix VIII)",
     "artist": "GUGADJ",
-    "album": "River of Light \u2014 Vol. 1",
+    "album": "River of Light — Vol. 1",
     "genre": "synthwave",
     "energy": 0.69,
     "valence": 0.61,
@@ -2331,15 +2331,15 @@
     ],
     "search_query": "GUGADJ - River of Light (Pop EDM Mix VIII)",
     "duration_sec": 212,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8147
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.7164
   },
   {
     "id": "trk_100",
     "title": "River of Light (GUGADJ Remix III)",
     "artist": "GUGADJ",
-    "album": "River of Light \u2014 Vol. 1",
+    "album": "River of Light — Vol. 1",
     "genre": "synthwave",
     "energy": 0.72,
     "valence": 0.64,
@@ -2357,13 +2357,13 @@
     "duration_sec": 301,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.7112
+    "calculated_score": 0.6345
   },
   {
     "id": "trk_101",
     "title": "River of Light (Re Rivka Remix II)",
     "artist": "GUGADJ",
-    "album": "River of Light \u2014 Vol. 1",
+    "album": "River of Light — Vol. 1",
     "genre": "synthwave",
     "energy": 0.69,
     "valence": 0.61,
@@ -2379,9 +2379,9 @@
     ],
     "search_query": "GUGADJ - River of Light (Re Rivka Remix II)",
     "duration_sec": 307,
-    "last_played_timestamp": null,
-    "play_count": 0,
-    "calculated_score": 0.8147
+    "last_played_timestamp": 1793099290.8126533,
+    "play_count": 1,
+    "calculated_score": 0.7164
   },
   {
     "id": "trk_102",
@@ -2405,7 +2405,7 @@
     "duration_sec": 218,
     "last_played_timestamp": null,
     "play_count": 0,
-    "calculated_score": 0.78
+    "calculated_score": 0.6894
   },
   {
     "id": "trk_103",
@@ -2429,6 +2429,1532 @@
     "duration_sec": 212,
     "last_played_timestamp": 1793098663.1061995,
     "play_count": 1,
-    "calculated_score": 0.9843
+    "calculated_score": 0.0401
+  },
+  {
+    "id": "trk_104",
+    "title": "Aku Yang Tersakiti",
+    "artist": "Judika",
+    "album": "K-20 Top Hits Indonesia",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Judika - Aku Yang Tersakiti",
+    "duration_sec": 239,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_105",
+    "title": "Penghuni Surga Sejatimu",
+    "artist": "Ungu",
+    "album": "Top Hits Religi UNGU",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Ungu - Penghuni Surga Sejatimu",
+    "duration_sec": 209,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_106",
+    "title": "Apa Salah Dan Dosaku",
+    "artist": "Trio Ambisi",
+    "album": "Top Hits Nostalgia Pop Indonesia 1",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Trio Ambisi - Apa Salah Dan Dosaku",
+    "duration_sec": 209,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_107",
+    "title": "Hujan",
+    "artist": "Utopia",
+    "album": "Indah",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Utopia - Hujan",
+    "duration_sec": 235,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_108",
+    "title": "Gak Kayak Mantanmu",
+    "artist": "Marcello Tahitoe",
+    "album": "K-20 Top Hits Indonesia",
+    "genre": "indopop",
+    "energy": 0.48,
+    "valence": 0.48,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Marcello Tahitoe - Gak Kayak Mantanmu",
+    "duration_sec": 237,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_109",
+    "title": "Arti Hidup",
+    "artist": "Raim Laode",
+    "album": "iqro'",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Raim Laode - Arti Hidup",
+    "duration_sec": 186,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_110",
+    "title": "EEEE A",
+    "artist": "dia",
+    "album": "INI DIA",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "dia - EEEE A",
+    "duration_sec": 118,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_111",
+    "title": "FDO - Bonus",
+    "artist": "Pooh Shiesty",
+    "album": "All Eyes on Shiest",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Pooh Shiesty - FDO - Bonus",
+    "duration_sec": 319,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_112",
+    "title": "Federal Contraband 2",
+    "artist": "Pooh Shiesty",
+    "album": "Federal Contraband 2",
+    "genre": "indopop",
+    "energy": 0.5,
+    "valence": 0.5,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Pooh Shiesty - Federal Contraband 2",
+    "duration_sec": 437,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_113",
+    "title": "Let Me Ride",
+    "artist": "Dr. Dre",
+    "album": "The Chronic",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Dr. Dre - Let Me Ride",
+    "duration_sec": 260,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_114",
+    "title": "Indonesia Jaya",
+    "artist": "Lyodra",
+    "album": "Indonesia Jaya",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Lyodra - Indonesia Jaya",
+    "duration_sec": 224,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_115",
+    "title": "Siapa Bilang",
+    "artist": "Nasida Ria",
+    "album": "Top Hit's, Vol. 1",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Nasida Ria - Siapa Bilang",
+    "duration_sec": 250,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_116",
+    "title": "Tak Pernah Padam",
+    "artist": "Sandhy Sondoro",
+    "album": "K-20 Top Hits Indonesia",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Sandhy Sondoro - Tak Pernah Padam",
+    "duration_sec": 241,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_117",
+    "title": "Pasrah",
+    "artist": "Iga Mawarni",
+    "album": "Lagu Lagu Terbaik & Top Hits Iga Mawarni",
+    "genre": "indopop",
+    "energy": 0.53,
+    "valence": 0.53,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Iga Mawarni - Pasrah",
+    "duration_sec": 242,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_118",
+    "title": "Topeng",
+    "artist": "Noah",
+    "album": "Taman Langit",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Noah - Topeng",
+    "duration_sec": 267,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_119",
+    "title": "LBS RADIO POP STATION",
+    "artist": "Sam Pounds",
+    "album": "MOTIVES",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Sam Pounds - LBS RADIO POP STATION",
+    "duration_sec": 15,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_120",
+    "title": "Rock On Top",
+    "artist": "Ugly Duckling",
+    "album": "Journey to Anywhere",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Ugly Duckling - Rock On Top",
+    "duration_sec": 228,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_121",
+    "title": "Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "artist": "VillaBanks",
+    "album": "Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "genre": "indopop",
+    "energy": 0.48,
+    "valence": 0.48,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "VillaBanks - Il Doc 5 (feat. Guè, Sayf, Glocky & FT Kings)",
+    "duration_sec": 262,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_122",
+    "title": "Drip Siphi Iskorobho",
+    "artist": "Okmalumkoolkat",
+    "album": "Drip Siphi Iskorobho",
+    "genre": "indopop",
+    "energy": 0.46,
+    "valence": 0.46,
+    "tempo_bpm": 105,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "hits_indo",
+      "indonesia"
+    ],
+    "search_query": "Okmalumkoolkat - Drip Siphi Iskorobho",
+    "duration_sec": 208,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_123",
+    "title": "santa doesn’t know you like i do",
+    "artist": "Sabrina Carpenter",
+    "album": "Top Christmas Pop Hits 2026 by Digster Pop",
+    "genre": "pop",
+    "energy": 0.79,
+    "valence": 0.76,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Sabrina Carpenter - santa doesn’t know you like i do",
+    "duration_sec": 189,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_124",
+    "title": "Hope",
+    "artist": "XXXTENTACION",
+    "album": "Top y Virales Hits",
+    "genre": "pop",
+    "energy": 0.79,
+    "valence": 0.76,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "XXXTENTACION - Hope",
+    "duration_sec": 110,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_125",
+    "title": "Golden",
+    "artist": "HUNTR/X",
+    "album": "Top Hits 2026",
+    "genre": "pop",
+    "energy": 0.75,
+    "valence": 0.72,
+    "tempo_bpm": 118,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "HUNTR/X - Golden",
+    "duration_sec": 194,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_126",
+    "title": "Still Devoted",
+    "artist": "Dream Relic",
+    "album": "Still Devoted",
+    "genre": "pop",
+    "energy": 0.73,
+    "valence": 0.7,
+    "tempo_bpm": 117,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Dream Relic - Still Devoted",
+    "duration_sec": 167,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_127",
+    "title": "Anyway (feat. 2 Chainz & Gucci Mane)",
+    "artist": "Lil Baby",
+    "album": "Street Gossip",
+    "genre": "pop",
+    "energy": 0.77,
+    "valence": 0.74,
+    "tempo_bpm": 119,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Lil Baby - Anyway (feat. 2 Chainz & Gucci Mane)",
+    "duration_sec": 226,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_128",
+    "title": "FDO",
+    "artist": "Pooh Shiesty",
+    "album": "FDO",
+    "genre": "pop",
+    "energy": 0.79,
+    "valence": 0.76,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Pooh Shiesty - FDO",
+    "duration_sec": 319,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_129",
+    "title": "Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023™",
+    "artist": "Weird Genius",
+    "album": "Glorious The Remix (The Official Song of FIFA U-17 World Cup Indonesia 2023™)",
+    "genre": "pop",
+    "energy": 0.74,
+    "valence": 0.71,
+    "tempo_bpm": 118,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Weird Genius - Glorious The Remix - The Official Song of FIFA U-17 World Cup Indonesia 2023™",
+    "duration_sec": 199,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_130",
+    "title": "TRENDING NOW",
+    "artist": "DJ Felina Hera",
+    "album": "TRENDING NOW",
+    "genre": "pop",
+    "energy": 0.79,
+    "valence": 0.76,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "DJ Felina Hera - TRENDING NOW",
+    "duration_sec": 200,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_131",
+    "title": "Yeah",
+    "artist": "Luciano",
+    "album": "MILLIES",
+    "genre": "pop",
+    "energy": 0.78,
+    "valence": 0.75,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Luciano - Yeah",
+    "duration_sec": 202,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_132",
+    "title": "Like It's Christmas",
+    "artist": "Jonas Brothers",
+    "album": "Top Christmas Pop Hits 2026 by Digster Pop",
+    "genre": "pop",
+    "energy": 0.73,
+    "valence": 0.7,
+    "tempo_bpm": 117,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Jonas Brothers - Like It's Christmas",
+    "duration_sec": 200,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_133",
+    "title": "Deslocado",
+    "artist": "NAPA",
+    "album": "Top Hits pra você conhecer",
+    "genre": "pop",
+    "energy": 0.78,
+    "valence": 0.75,
+    "tempo_bpm": 120,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "NAPA - Deslocado",
+    "duration_sec": 179,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_134",
+    "title": "Wish You Were Sober",
+    "artist": "Conan Gray",
+    "album": "Top Hits 2020",
+    "genre": "pop",
+    "energy": 0.77,
+    "valence": 0.74,
+    "tempo_bpm": 119,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Conan Gray - Wish You Were Sober",
+    "duration_sec": 168,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_135",
+    "title": "We Don’t Talk Anymore (feat. Selena Gomez)",
+    "artist": "Charlie Puth",
+    "album": "Global Top Hits - Summer 2024",
+    "genre": "pop",
+    "energy": 0.71,
+    "valence": 0.68,
+    "tempo_bpm": 116,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Charlie Puth - We Don’t Talk Anymore (feat. Selena Gomez)",
+    "duration_sec": 217,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_136",
+    "title": "BANKS HOUSE",
+    "artist": "Fatt Smaxk",
+    "album": "Smaxk Season 3: Banks House",
+    "genre": "pop",
+    "energy": 0.71,
+    "valence": 0.68,
+    "tempo_bpm": 116,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Fatt Smaxk - BANKS HOUSE",
+    "duration_sec": 125,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_137",
+    "title": "Conceited",
+    "artist": "Flo Milli",
+    "album": "Conceited",
+    "genre": "pop",
+    "energy": 0.76,
+    "valence": 0.73,
+    "tempo_bpm": 119,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Flo Milli - Conceited",
+    "duration_sec": 147,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_138",
+    "title": "Milo J: Bzrp Music Sessions, Vol. 57/66",
+    "artist": "Bizarrap",
+    "album": "Milo J: Bzrp Music Sessions, Vol. 57/66",
+    "genre": "pop",
+    "energy": 0.75,
+    "valence": 0.72,
+    "tempo_bpm": 118,
+    "tags": [
+      "energetic",
+      "clear",
+      "sunny",
+      "workout",
+      "daylight",
+      "peak",
+      "joyful"
+    ],
+    "search_query": "Bizarrap - Milo J: Bzrp Music Sessions, Vol. 57/66",
+    "duration_sec": 189,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_139",
+    "title": "Satu Bulan",
+    "artist": "Bernadya",
+    "album": "Terlintas",
+    "genre": "indopop",
+    "energy": 0.49,
+    "valence": 0.49,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Bernadya - Satu Bulan",
+    "duration_sec": 200,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_140",
+    "title": "Untungnya, Hidup Harus Tetap Berjalan",
+    "artist": "Bernadya",
+    "album": "Sialnya, Hidup Harus Tetap Berjalan",
+    "genre": "indopop",
+    "energy": 0.5,
+    "valence": 0.5,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Bernadya - Untungnya, Hidup Harus Tetap Berjalan",
+    "duration_sec": 182,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_141",
+    "title": "Rabun Jauh",
+    "artist": "Bernadya",
+    "album": "Rabun Jauh",
+    "genre": "indopop",
+    "energy": 0.53,
+    "valence": 0.53,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Bernadya - Rabun Jauh",
+    "duration_sec": 175,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_142",
+    "title": "Kata Mereka Ini Berlebihan",
+    "artist": "Bernadya",
+    "album": "Sialnya, Hidup Harus Tetap Berjalan",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Bernadya - Kata Mereka Ini Berlebihan",
+    "duration_sec": 191,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_143",
+    "title": "Percuma",
+    "artist": "Mahalini",
+    "album": "Percuma",
+    "genre": "indopop",
+    "energy": 0.5,
+    "valence": 0.5,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Mahalini - Percuma",
+    "duration_sec": 266,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_144",
+    "title": "Bawa Dia Kembali",
+    "artist": "Mahalini",
+    "album": "fábula",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Mahalini - Bawa Dia Kembali",
+    "duration_sec": 226,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_145",
+    "title": "Sial",
+    "artist": "Mahalini",
+    "album": "fábula",
+    "genre": "indopop",
+    "energy": 0.48,
+    "valence": 0.48,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Mahalini - Sial",
+    "duration_sec": 243,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_146",
+    "title": "Untuk Yang Bersama Nya",
+    "artist": "Mahalini",
+    "album": "Koma,",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Mahalini - Untuk Yang Bersama Nya",
+    "duration_sec": 284,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_147",
+    "title": "Bohongi Hati",
+    "artist": "Mahalini",
+    "album": "fábula",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Mahalini - Bohongi Hati",
+    "duration_sec": 262,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_148",
+    "title": "Ada titik-titik di ujung doa",
+    "artist": "Sal Priadi",
+    "album": "MARKERS AND SUCH PENS FLASHDISKS",
+    "genre": "indopop",
+    "energy": 0.49,
+    "valence": 0.49,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Sal Priadi - Ada titik-titik di ujung doa",
+    "duration_sec": 305,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_149",
+    "title": "Kita usahakan rumah itu",
+    "artist": "Sal Priadi",
+    "album": "MARKERS AND SUCH",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Sal Priadi - Kita usahakan rumah itu",
+    "duration_sec": 211,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_150",
+    "title": "I'd like to watch you sleeping",
+    "artist": "Sal Priadi",
+    "album": "MARKERS AND SUCH PENS FLASHDISKS",
+    "genre": "indopop",
+    "energy": 0.48,
+    "valence": 0.48,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Sal Priadi - I'd like to watch you sleeping",
+    "duration_sec": 309,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_151",
+    "title": "Mesra-mesraannya kecil-kecilan dulu",
+    "artist": "Sal Priadi",
+    "album": "MARKERS AND SUCH PENS FLASHDISKS",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Sal Priadi - Mesra-mesraannya kecil-kecilan dulu",
+    "duration_sec": 209,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_152",
+    "title": "Foto kita blur",
+    "artist": "Sal Priadi",
+    "album": "MARKERS AND SUCH PENS FLASHDISKS",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Sal Priadi - Foto kita blur",
+    "duration_sec": 271,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_153",
+    "title": "Teh Hijau",
+    "artist": "Tulus",
+    "album": "Teh Hijau",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Tulus - Teh Hijau",
+    "duration_sec": 212,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_154",
+    "title": "Jatuh Suka",
+    "artist": "Tulus",
+    "album": "Manusia",
+    "genre": "indopop",
+    "energy": 0.46,
+    "valence": 0.46,
+    "tempo_bpm": 105,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Tulus - Jatuh Suka",
+    "duration_sec": 235,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_155",
+    "title": "Hati-Hati di Jalan",
+    "artist": "Tulus",
+    "album": "Manusia",
+    "genre": "indopop",
+    "energy": 0.53,
+    "valence": 0.53,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Tulus - Hati-Hati di Jalan",
+    "duration_sec": 242,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_156",
+    "title": "Monokrom",
+    "artist": "Tulus",
+    "album": "Monokrom",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Tulus - Monokrom",
+    "duration_sec": 214,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_157",
+    "title": "Interaksi",
+    "artist": "Tulus",
+    "album": "Manusia",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Tulus - Interaksi",
+    "duration_sec": 170,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_158",
+    "title": "Bertaut",
+    "artist": "Nadin Amizah",
+    "album": "Selamat Ulang Tahun",
+    "genre": "indopop",
+    "energy": 0.52,
+    "valence": 0.52,
+    "tempo_bpm": 108,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Nadin Amizah - Bertaut",
+    "duration_sec": 315,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_159",
+    "title": "Sorai",
+    "artist": "Nadin Amizah",
+    "album": "Sorai",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Nadin Amizah - Sorai",
+    "duration_sec": 278,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_160",
+    "title": "Di Akhir Perang",
+    "artist": "Nadin Amizah",
+    "album": "Untuk Dunia, Cinta, dan Kotornya",
+    "genre": "indopop",
+    "energy": 0.46,
+    "valence": 0.46,
+    "tempo_bpm": 105,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Nadin Amizah - Di Akhir Perang",
+    "duration_sec": 238,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_161",
+    "title": "Rayuan Perempuan Gila",
+    "artist": "Nadin Amizah",
+    "album": "Rayuan Perempuan Gila",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Nadin Amizah - Rayuan Perempuan Gila",
+    "duration_sec": 320,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_162",
+    "title": "Nadin Amizah",
+    "artist": "Nadin Amizah",
+    "album": "Untuk Dunia, Cinta, dan Kotornya",
+    "genre": "indopop",
+    "energy": 0.47,
+    "valence": 0.47,
+    "tempo_bpm": 106,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn",
+      "indonesia",
+      "hits_indo"
+    ],
+    "search_query": "Nadin Amizah - Nadin Amizah",
+    "duration_sec": 487,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_163",
+    "title": "Dan...",
+    "artist": "Sheila On 7",
+    "album": "Sheila On 7",
+    "genre": "indopop",
+    "energy": 0.49,
+    "valence": 0.49,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn"
+    ],
+    "search_query": "Sheila On 7 - Dan...",
+    "duration_sec": 288,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_164",
+    "title": "Bila Kau Tak Disampingku",
+    "artist": "Sheila On 7",
+    "album": "Kisah Klasik Untuk Masa Depan",
+    "genre": "indopop",
+    "energy": 0.46,
+    "valence": 0.46,
+    "tempo_bpm": 105,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn"
+    ],
+    "search_query": "Sheila On 7 - Bila Kau Tak Disampingku",
+    "duration_sec": 256,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_165",
+    "title": "J.A.P",
+    "artist": "Sheila On 7",
+    "album": "Sheila On 7",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn"
+    ],
+    "search_query": "Sheila On 7 - J.A.P",
+    "duration_sec": 284,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_166",
+    "title": "Celengan Rindu",
+    "artist": "Fiersa Besari",
+    "album": "Tempat Aku Pulang",
+    "genre": "indopop",
+    "energy": 0.51,
+    "valence": 0.51,
+    "tempo_bpm": 107,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn"
+    ],
+    "search_query": "Fiersa Besari - Celengan Rindu",
+    "duration_sec": 222,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
+  },
+  {
+    "id": "trk_167",
+    "title": "777",
+    "artist": "Bruno Mars",
+    "album": "An Evening With Silk Sonic",
+    "genre": "indopop",
+    "energy": 0.54,
+    "valence": 0.54,
+    "tempo_bpm": 109,
+    "tags": [
+      "afternoon",
+      "driving",
+      "groove",
+      "sunset",
+      "autumn"
+    ],
+    "search_query": "Bruno Mars - 777",
+    "duration_sec": 165,
+    "last_played_timestamp": null,
+    "play_count": 0,
+    "calculated_score": 0.0
   }
 ]
