@@ -1,6 +1,14 @@
 @echo off
-REM AtmosTune Telegram Bot Remote Controller Launcher
+title AtmosTune Telegram Bot Controller
 cd /d "%~dp0"
-echo Starting AtmosTune Telegram Bot Controller...
+
+echo ========================================================
+echo       Starting AtmosTune Telegram Bot Standalone
+echo ========================================================
+echo Running independently from Antigravity IDE...
+echo Press Ctrl+C in this window anytime to stop the bot.
+echo.
+
 python main.py --telegram
+
 pause
