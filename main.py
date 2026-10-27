@@ -18,7 +18,7 @@ import time
 import argparse
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 
@@ -139,6 +139,7 @@ def run_atmostune_cycle(
     mood_override: Optional[str] = None,
     genre_filter: Optional[str] = None,
     tag_filter: Optional[str] = None,
+    tracks_override: Optional[List[Any]] = None,
     logger: Optional[logging.Logger] = None,
 ) -> Dict[str, Any]:
     """
@@ -233,7 +234,7 @@ def run_atmostune_cycle(
     should_run, reason = context_fetcher.should_trigger_update(
         current_context=context,
         state=state,
-        force=force or bool(mood_override) or bool(genre_filter) or bool(tag_filter),
+        force=force or bool(mood_override) or bool(genre_filter) or bool(tag_filter) or bool(tracks_override),
     )
 
     if not should_run and not dry_run:
@@ -259,13 +260,22 @@ def run_atmostune_cycle(
         logger=log,
     )
 
-    curated_tracks = selector.select_tracks(
-        target_mood=matched_mood,
-        weather_condition=context.condition,
-        update_state=not dry_run,
-        genre_filter=genre_filter,
-        tag_filter=tag_filter,
-    )
+    if tracks_override:
+        curated_tracks = tracks_override
+        if not dry_run:
+            now = time.time()
+            for track in curated_tracks:
+                track.last_played_timestamp = now
+                track.play_count += 1
+            selector.save_tracks()
+    else:
+        curated_tracks = selector.select_tracks(
+            target_mood=matched_mood,
+            weather_condition=context.condition,
+            update_state=not dry_run,
+            genre_filter=genre_filter,
+            tag_filter=tag_filter,
+        )
 
     if not curated_tracks:
         log.warning("No suitable tracks could be selected. Aborting.")

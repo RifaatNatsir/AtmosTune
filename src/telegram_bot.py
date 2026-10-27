@@ -19,13 +19,13 @@ import time
 import logging
 import threading
 from pathlib import Path
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable, Set
 
 import telebot
 from telebot import types
 
 from src.context_fetcher import ContextFetcher, WeatherTimeContext
-from src.track_selector import SmartTrackSelector
+from src.track_selector import SmartTrackSelector, Track
 from src.rpa_executor import PlaywrightRPAExecutor, AuthenticationRequiredError
 
 
@@ -57,6 +57,8 @@ class AtmosTelegramBot:
         self.bot = telebot.TeleBot(self.bot_token, parse_mode="Markdown")
         self._is_busy = False
         self._busy_lock = threading.Lock()
+        self._staged_sessions: Dict[int, Dict[str, Any]] = {}
+        self._staged_lock = threading.Lock()
         self._register_handlers()
 
     def _is_authorized(self, chat_id: int) -> bool:
@@ -184,6 +186,30 @@ class AtmosTelegramBot:
         keyboard.add(types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data="btn_back"))
         return keyboard
 
+    def _get_staged_keyboard(self, track_count: int) -> types.InlineKeyboardMarkup:
+        """
+        Creates interactive preview keyboard with numbered elimination buttons
+        in 5 columns per row, plus Confirmation, Reroll, and Cancel buttons.
+        """
+        keyboard = types.InlineKeyboardMarkup()
+        row: List[types.InlineKeyboardButton] = []
+        for i in range(1, track_count + 1):
+            row.append(types.InlineKeyboardButton(f"❌ {i}", callback_data=f"swap_track:{i}"))
+            if len(row) == 5:
+                keyboard.row(*row)
+                row = []
+        if row:
+            keyboard.row(*row)
+
+        keyboard.row(
+            types.InlineKeyboardButton("🚀 Setuju & Update ke Spotify", callback_data="confirm_staged")
+        )
+        keyboard.row(
+            types.InlineKeyboardButton("🔄 Acak Ulang", callback_data="reroll_staged"),
+            types.InlineKeyboardButton("🔙 Batal", callback_data="cancel_staged"),
+        )
+        return keyboard
+
     def _register_handlers(self) -> None:
         """Registers all bot slash command handlers and inline callback queries."""
 
@@ -216,7 +242,7 @@ class AtmosTelegramBot:
             if not self._is_authorized(message.chat.id):
                 self._send_unauthorized_msg(message.chat.id)
                 return
-            self._trigger_rebuild_async(message.chat.id)
+            self._stage_and_preview(message.chat.id)
 
         @self.bot.message_handler(commands=["weather"])
         def handle_weather_cmd(message: types.Message):
@@ -234,7 +260,7 @@ class AtmosTelegramBot:
             if len(parts) > 1:
                 hit_type = parts[1].strip().lower()
                 tag = "hits_indo" if "indo" in hit_type else ("hits_global" if "global" in hit_type else hit_type)
-                self._trigger_rebuild_async(message.chat.id, tag_filter=tag)
+                self._stage_and_preview(message.chat.id, tag_filter=tag)
             else:
                 self.bot.send_message(
                     message.chat.id,
@@ -250,7 +276,7 @@ class AtmosTelegramBot:
             parts = message.text.split(maxsplit=1)
             if len(parts) > 1:
                 genre_name = parts[1].strip().lower()
-                self._trigger_rebuild_async(message.chat.id, genre_filter=genre_name)
+                self._stage_and_preview(message.chat.id, genre_filter=genre_name)
             else:
                 self.bot.send_message(
                     message.chat.id,
@@ -284,7 +310,7 @@ class AtmosTelegramBot:
             if not self._is_authorized(message.chat.id):
                 self._send_unauthorized_msg(message.chat.id)
                 return
-            self._send_preview(message.chat.id)
+            self._stage_and_preview(message.chat.id)
 
         @self.bot.message_handler(commands=["status"])
         def handle_status_cmd(message: types.Message):
@@ -301,7 +327,7 @@ class AtmosTelegramBot:
             parts = message.text.split(maxsplit=1)
             if len(parts) > 1:
                 mood_name = parts[1].strip()
-                self._trigger_rebuild_async(message.chat.id, mood_override=mood_name)
+                self._stage_and_preview(message.chat.id, mood_override=mood_name)
             else:
                 self.bot.send_message(
                     message.chat.id,
@@ -326,13 +352,14 @@ class AtmosTelegramBot:
                 self.bot.answer_callback_query(call.id)
                 return
 
-            self.bot.answer_callback_query(call.id)
-
             if call.data == "btn_rebuild":
-                self._trigger_rebuild_async(chat_id, message_id=msg_id)
+                self.bot.answer_callback_query(call.id)
+                self._stage_and_preview(chat_id, message_id=msg_id)
             elif call.data == "btn_weather":
+                self.bot.answer_callback_query(call.id)
                 self._send_weather_info(chat_id, message_id=msg_id)
             elif call.data == "btn_hits_menu":
+                self.bot.answer_callback_query(call.id)
                 self._edit_or_send(
                     chat_id=chat_id,
                     message_id=msg_id,
@@ -340,6 +367,7 @@ class AtmosTelegramBot:
                     reply_markup=self._get_hits_keyboard(),
                 )
             elif call.data == "btn_genre_menu":
+                self.bot.answer_callback_query(call.id)
                 self._edit_or_send(
                     chat_id=chat_id,
                     message_id=msg_id,
@@ -347,17 +375,22 @@ class AtmosTelegramBot:
                     reply_markup=self._get_genre_keyboard(),
                 )
             elif call.data.startswith("set_hits:"):
+                self.bot.answer_callback_query(call.id)
                 hit_type = call.data.split(":", 1)[1]
                 tag = "hits_indo" if hit_type in ("indo", "indopop") else ("hits_global" if hit_type == "global" else hit_type)
-                self._trigger_rebuild_async(chat_id, tag_filter=tag, message_id=msg_id)
+                self._stage_and_preview(chat_id, tag_filter=tag, message_id=msg_id)
             elif call.data.startswith("set_genre:"):
+                self.bot.answer_callback_query(call.id)
                 genre_name = call.data.split(":", 1)[1]
-                self._trigger_rebuild_async(chat_id, genre_filter=genre_name, message_id=msg_id)
+                self._stage_and_preview(chat_id, genre_filter=genre_name, message_id=msg_id)
             elif call.data == "btn_preview":
-                self._send_preview(chat_id, message_id=msg_id)
+                self.bot.answer_callback_query(call.id)
+                self._stage_and_preview(chat_id, message_id=msg_id)
             elif call.data == "btn_status":
+                self.bot.answer_callback_query(call.id)
                 self._send_status(chat_id, message_id=msg_id)
             elif call.data == "btn_mood_menu":
+                self.bot.answer_callback_query(call.id)
                 self._edit_or_send(
                     chat_id=chat_id,
                     message_id=msg_id,
@@ -365,13 +398,26 @@ class AtmosTelegramBot:
                     reply_markup=self._get_mood_keyboard(),
                 )
             elif call.data.startswith("set_mood:"):
+                self.bot.answer_callback_query(call.id)
                 mood_name = call.data.split(":", 1)[1]
-                self._trigger_rebuild_async(chat_id, mood_override=mood_name, message_id=msg_id)
+                self._stage_and_preview(chat_id, mood_override=mood_name, message_id=msg_id)
+            elif call.data.startswith("swap_track:"):
+                idx_str = call.data.split(":", 1)[1]
+                self._handle_swap_track(call, idx_str)
+            elif call.data == "confirm_staged":
+                self._handle_confirm_staged(call)
+            elif call.data == "reroll_staged":
+                self._handle_reroll_staged(call)
+            elif call.data == "cancel_staged":
+                self._handle_cancel_staged(call)
             elif call.data == "btn_clear_prompt":
+                self.bot.answer_callback_query(call.id)
                 self._send_clear_prompt(chat_id, message_id=msg_id)
             elif call.data == "btn_clear_confirm":
+                self.bot.answer_callback_query(call.id)
                 self._trigger_clear_async(chat_id, message_id=msg_id)
             elif call.data == "btn_clear_cancel":
+                self.bot.answer_callback_query(call.id)
                 self._edit_or_send(
                     chat_id=chat_id,
                     message_id=msg_id,
@@ -379,6 +425,7 @@ class AtmosTelegramBot:
                     reply_markup=self._get_main_keyboard(),
                 )
             elif call.data == "btn_back":
+                self.bot.answer_callback_query(call.id)
                 welcome_text = (
                     "👋 *AtmosTune Dashboard*\n\n"
                     "Control your Spotify atmospheric playlist dynamically based on real-time local weather & time of day.\n\n"
@@ -418,38 +465,307 @@ class AtmosTelegramBot:
             self.logger.error("Failed to fetch weather for Telegram: %s", exc)
             self._edit_or_send(chat_id=chat_id, text=f"⚠️ Error querying weather: `{exc}`", message_id=message_id)
 
-    def _send_preview(self, chat_id: int, message_id: Optional[int] = None) -> None:
-        """Computes track selection without modifying Spotify in-place."""
+    def _format_staged_message(self, session: Dict[str, Any]) -> str:
+        """Formats the 20-song staging preview with atmospheric metadata and swap instructions."""
+        mood_name = session.get("mood_name", "Atmospheric Sound")
+        weather = session.get("weather", "Clear")
+        temp = session.get("temperature", 25.0)
+        time_block = session.get("time_block", "now")
+        tracks = session.get("staged_tracks", [])
+        matched_mood = session.get("matched_mood", {})
+        target_e = matched_mood.get("target_energy", 0.5)
+        target_v = matched_mood.get("target_valence", 0.5)
+
+        filter_desc = ""
+        if session.get("tag_filter") == "hits_indo":
+            filter_desc = " • *Kategori*: `Top Hits Indonesia` 🇮🇩"
+        elif session.get("tag_filter") == "hits_global":
+            filter_desc = " • *Kategori*: `Global Top Hits` 🌍"
+        elif session.get("genre_filter"):
+            filter_desc = f" • *Genre*: `{session['genre_filter'].title()}` 🎸"
+        elif session.get("mood_override"):
+            filter_desc = f" • *Mood Override*: `{session['mood_override']}` 🎨"
+
+        lines = [
+            "🎧 *PREVIEW TRACKS SEBELUM UPDATE SPOTIFY*\n",
+            f"🎨 *Tema / Mood*: *{mood_name}*{filter_desc}",
+            f"🌦️ *Atmosphere*: `{weather}` ({temp:+.1f}°C) • `{time_block}`",
+            f"🎯 *Target*: Energy `{target_e}` | Valence `{target_v}`\n",
+            f"📋 *Daftar {len(tracks)} Lagu yang Akan Dimasukkan:*",
+        ]
+
+        for i, trk in enumerate(tracks, 1):
+            lines.append(f"`{i:02d}.` *{trk.artist}* - {trk.title} `[E: {trk.energy:.2f}]`")
+
+        lines.extend([
+            "\n━━━━━━━━━━━━━━━━━━━━━",
+            "💡 *Mau eliminasi/ganti lagu?*",
+            f"_Klik tombol_ `❌ 1` _sampai_ `❌ {len(tracks)}` _di bawah untuk menggantinya dengan lagu rekomendasi lain secara instan._\n",
+            "🚀 *Sudah setuju dengan pilihan di atas?*",
+            "_Klik tombol_ *'🚀 Setuju & Update ke Spotify'* _untuk memasukkannya ke playlist Spotify Anda._",
+        ])
+
+        return "\n".join(lines)
+
+    def _stage_and_preview(
+        self,
+        chat_id: int,
+        mood_override: Optional[str] = None,
+        genre_filter: Optional[str] = None,
+        tag_filter: Optional[str] = None,
+        message_id: Optional[int] = None,
+    ) -> None:
+        """
+        Stages candidate tracks for preview & user elimination before committing to Spotify.
+        """
         try:
             fetcher = ContextFetcher(config=self.config, logger=self.logger)
-            ctx = fetcher.get_current_context()
+            ctx: WeatherTimeContext = fetcher.get_current_context()
+
+            matched_mood = ctx.matched_mood
+            if mood_override:
+                found_mood = None
+                for cond, blocks in self.config.get("mood_matrix", {}).items():
+                    if isinstance(blocks, dict):
+                        for blk, mdata in blocks.items():
+                            if isinstance(mdata, dict) and mdata.get("mood_name", "").lower() == mood_override.lower():
+                                found_mood = mdata
+                                break
+                    if found_mood:
+                        break
+
+                if found_mood:
+                    matched_mood = found_mood
+                    mood_name = found_mood.get("mood_name")
+                else:
+                    mood_name = mood_override
+                    matched_mood = {
+                        "mood_name": mood_name,
+                        "description": f"Custom mood override: {mood_name}",
+                        "target_energy": 0.50,
+                        "target_valence": 0.50,
+                        "preferred_genres": ["ambient", "indie", "electronic"],
+                    }
+            elif tag_filter == "hits_indo":
+                mood_name = "Top Hits Indonesia"
+                matched_mood = {
+                    "mood_name": mood_name,
+                    "description": "Trending chart toppers & popular Indonesian hits",
+                    "target_energy": 0.75,
+                    "target_valence": 0.70,
+                    "preferred_genres": ["indopop", "pop", "indie"],
+                }
+            elif tag_filter == "hits_global":
+                mood_name = "Global Top Hits"
+                matched_mood = {
+                    "mood_name": mood_name,
+                    "description": "Worldwide chart toppers & viral global bangers",
+                    "target_energy": 0.78,
+                    "target_valence": 0.72,
+                    "preferred_genres": ["pop", "dance", "electronic"],
+                }
+            elif genre_filter:
+                mood_name = f"{genre_filter.title()} Sound"
+                matched_mood = {
+                    "mood_name": mood_name,
+                    "description": f"Curated selection strictly for genre: {genre_filter.title()}",
+                    "target_energy": matched_mood.get("target_energy", 0.50),
+                    "target_valence": matched_mood.get("target_valence", 0.50),
+                    "preferred_genres": [genre_filter],
+                }
+            else:
+                mood_name = matched_mood.get("mood_name", "Atmospheric Drift")
+
             selector = SmartTrackSelector(
                 tracks_db_path="./data/tracks_db.json",
                 config=self.config,
                 logger=self.logger,
             )
             tracks = selector.select_tracks(
-                target_mood=ctx.matched_mood,
+                target_mood=matched_mood,
                 weather_condition=ctx.condition,
                 update_state=False,
+                genre_filter=genre_filter,
+                tag_filter=tag_filter,
             )
 
-            mood = ctx.matched_mood.get("mood_name", "Atmospheric Drift")
-            msg_lines = [
-                f"🎵 *Preview: {mood.upper()}*",
-                f"_{ctx.condition} at {ctx.time_block} ({ctx.temperature:+.1f}°C)_\n",
-            ]
-            for i, trk in enumerate(tracks[:12], 1):
-                msg_lines.append(f"`{i:02d}.` *{trk.artist}* - {trk.title} `[E: {trk.energy:.2f}]`")
+            if not tracks:
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    text="⚠️ Tidak ada lagu yang cocok ditemukan di database untuk kategori ini.",
+                    reply_markup=self._get_main_keyboard(),
+                    message_id=message_id,
+                )
+                return
 
-            if len(tracks) > 12:
-                msg_lines.append(f"_...dan {len(tracks) - 12} lagu lainnya (Total: {len(tracks)})_")
+            with self._staged_lock:
+                self._staged_sessions[chat_id] = {
+                    "mood_name": mood_name,
+                    "matched_mood": matched_mood,
+                    "weather": ctx.condition,
+                    "temperature": ctx.temperature,
+                    "time_block": ctx.time_block,
+                    "genre_filter": genre_filter,
+                    "tag_filter": tag_filter,
+                    "mood_override": mood_override,
+                    "staged_tracks": tracks,
+                    "rejected_track_ids": set(),
+                }
+                session = self._staged_sessions[chat_id]
 
-            msg = "\n".join(msg_lines)
-            self._edit_or_send(chat_id=chat_id, text=msg, reply_markup=self._get_main_keyboard(), message_id=message_id)
+            msg_text = self._format_staged_message(session)
+            keyboard = self._get_staged_keyboard(len(tracks))
+            self._edit_or_send(
+                chat_id=chat_id,
+                text=msg_text,
+                reply_markup=keyboard,
+                message_id=message_id,
+            )
         except Exception as exc:
-            self.logger.error("Failed to generate preview for Telegram: %s", exc)
-            self._edit_or_send(chat_id=chat_id, text=f"⚠️ Error generating preview: `{exc}`", message_id=message_id)
+            self.logger.error("Failed to stage tracks for Telegram: %s", exc)
+            self._edit_or_send(
+                chat_id=chat_id,
+                text=f"⚠️ Gagal menyiapkan preview lagu: `{exc}`",
+                reply_markup=self._get_main_keyboard(),
+                message_id=message_id,
+            )
+
+    def _handle_swap_track(self, call: types.CallbackQuery, idx_str: str) -> None:
+        """Eliminates a specific track and replaces it in-place with another candidate."""
+        chat_id = call.message.chat.id
+        msg_id = call.message.message_id
+        try:
+            track_idx = int(idx_str) - 1
+        except ValueError:
+            self.bot.answer_callback_query(call.id, "Index lagu tidak valid!")
+            return
+
+        with self._staged_lock:
+            session = self._staged_sessions.get(chat_id)
+            if not session or not session.get("staged_tracks"):
+                self.bot.answer_callback_query(call.id, "Sesi preview telah kedaluwarsa. Silakan pilih kembali dari menu.")
+                return
+
+            staged_tracks = session["staged_tracks"]
+            if track_idx < 0 or track_idx >= len(staged_tracks):
+                self.bot.answer_callback_query(call.id, "Nomor lagu di luar batas!")
+                return
+
+            old_track = staged_tracks[track_idx]
+            session["rejected_track_ids"].add(old_track.id)
+
+            selector = SmartTrackSelector(
+                tracks_db_path="./data/tracks_db.json",
+                config=self.config,
+                logger=self.logger,
+            )
+
+            other_tracks = [t for i, t in enumerate(staged_tracks) if i != track_idx]
+
+            new_track = selector.get_replacement_track(
+                target_mood=session["matched_mood"],
+                weather_condition=session["weather"],
+                current_staged_tracks=other_tracks,
+                excluded_track_ids=session["rejected_track_ids"],
+                genre_filter=session["genre_filter"],
+                tag_filter=session["tag_filter"],
+            )
+
+            if not new_track:
+                self.bot.answer_callback_query(call.id, "⚠️ Tidak ada lagu pengganti lain yang tersedia di database!", show_alert=True)
+                return
+
+            staged_tracks[track_idx] = new_track
+            session["staged_tracks"] = staged_tracks
+
+        self.bot.answer_callback_query(
+            call.id,
+            f"✅ Lagu #{idx_str} diganti:\n{new_track.artist} - {new_track.title}",
+        )
+
+        msg_text = self._format_staged_message(session)
+        keyboard = self._get_staged_keyboard(len(staged_tracks))
+        self._edit_or_send(
+            chat_id=chat_id,
+            text=msg_text,
+            reply_markup=keyboard,
+            message_id=msg_id,
+        )
+
+    def _handle_confirm_staged(self, call: types.CallbackQuery) -> None:
+        """Executes Spotify update once user confirms approval of the staged tracks."""
+        chat_id = call.message.chat.id
+        msg_id = call.message.message_id
+
+        with self._staged_lock:
+            session = self._staged_sessions.pop(chat_id, None)
+
+        if not session or not session.get("staged_tracks"):
+            self.bot.answer_callback_query(call.id, "Sesi preview tidak ditemukan. Silakan pilih kembali dari menu.", show_alert=True)
+            return
+
+        self.bot.answer_callback_query(call.id, "🚀 Menjalankan sinkronisasi Spotify...")
+
+        staged_tracks = session["staged_tracks"]
+        mood_override = session.get("mood_override")
+        genre_filter = session.get("genre_filter")
+        tag_filter = session.get("tag_filter")
+
+        self._trigger_rebuild_async(
+            chat_id=chat_id,
+            mood_override=mood_override,
+            genre_filter=genre_filter,
+            tag_filter=tag_filter,
+            tracks_override=staged_tracks,
+            message_id=msg_id,
+        )
+
+    def _handle_reroll_staged(self, call: types.CallbackQuery) -> None:
+        """Re-shuffles and re-selects candidate tracks."""
+        chat_id = call.message.chat.id
+        msg_id = call.message.message_id
+
+        with self._staged_lock:
+            session = self._staged_sessions.get(chat_id)
+
+        if not session:
+            self.bot.answer_callback_query(call.id, "Sesi preview tidak ditemukan.")
+            return
+
+        self.bot.answer_callback_query(call.id, "🔄 Mengacak ulang daftar lagu...")
+
+        self._stage_and_preview(
+            chat_id=chat_id,
+            mood_override=session.get("mood_override"),
+            genre_filter=session.get("genre_filter"),
+            tag_filter=session.get("tag_filter"),
+            message_id=msg_id,
+        )
+
+    def _handle_cancel_staged(self, call: types.CallbackQuery) -> None:
+        """Cancels staging session and returns to dashboard."""
+        chat_id = call.message.chat.id
+        msg_id = call.message.message_id
+
+        with self._staged_lock:
+            self._staged_sessions.pop(chat_id, None)
+
+        self.bot.answer_callback_query(call.id, "Operasi dibatalkan.")
+        welcome_text = (
+            "👋 *AtmosTune Dashboard*\n\n"
+            "Control your Spotify atmospheric playlist dynamically based on real-time local weather & time of day.\n\n"
+            "Select an option below:"
+        )
+        self._edit_or_send(
+            chat_id=chat_id,
+            message_id=msg_id,
+            text=welcome_text,
+            reply_markup=self._get_main_keyboard(),
+        )
+
+    def _send_preview(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Alias to open interactive staged preview."""
+        self._stage_and_preview(chat_id=chat_id, message_id=message_id)
 
     def _send_status(self, chat_id: int, message_id: Optional[int] = None) -> None:
         """Audits current state file and cooldown status in-place."""
@@ -560,6 +876,7 @@ class AtmosTelegramBot:
         mood_override: Optional[str] = None,
         genre_filter: Optional[str] = None,
         tag_filter: Optional[str] = None,
+        tracks_override: Optional[List[Any]] = None,
         message_id: Optional[int] = None,
     ) -> None:
         """Spawns background thread to execute full headless RPA rebuild in-place."""
@@ -573,7 +890,9 @@ class AtmosTelegramBot:
                 return
             self._is_busy = True
 
-        if tag_filter == "hits_indo":
+        if tracks_override:
+            status_text = f"⏳ *Menyinkronkan {len(tracks_override)} lagu yang telah disetujui ke Spotify...*\n_Membersihkan playlist & menambahkan tracks baru..._"
+        elif tag_filter == "hits_indo":
             status_text = "⏳ *Menyiapkan playlist Top Hits Indonesia...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits Indonesia..._"
         elif tag_filter == "hits_global":
             status_text = "⏳ *Menyiapkan playlist Global Top Hits...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits dunia..._"
@@ -598,6 +917,7 @@ class AtmosTelegramBot:
                     mood_override=mood_override,
                     genre_filter=genre_filter,
                     tag_filter=tag_filter,
+                    tracks_override=tracks_override,
                     logger=self.logger,
                 )
 

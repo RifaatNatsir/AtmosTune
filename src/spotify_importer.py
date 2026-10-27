@@ -45,6 +45,8 @@ class SpotifyImporter:
         "indie": (0.52, 0.52),
         "synthwave": (0.68, 0.60),
         "retrowave": (0.70, 0.62),
+        "indopop": (0.62, 0.60),
+        "r&b": (0.50, 0.55),
         "pop": (0.75, 0.72),
         "dance": (0.85, 0.80),
         "rock": (0.80, 0.60),
@@ -516,12 +518,13 @@ class SpotifyImporter:
             seen_keys.add(combo_key)
             seen_titles.add(title.lower())
 
-        # Persist updated database to disk
         if new_tracks:
             combined = existing_tracks + new_tracks
             self.db_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.db_path, "w", encoding="utf-8") as f:
+            temp_file = self.db_path.with_suffix(".tmp")
+            with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(combined, f, indent=2, ensure_ascii=False)
+            temp_file.replace(self.db_path)
 
             self.logger.info(
                 "Database expanded: Added %d new tracks (skipped %d duplicates). Total in DB: %d.",

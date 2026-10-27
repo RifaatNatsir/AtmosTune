@@ -13,11 +13,12 @@ from __future__ import annotations
 
 import json
 import math
+import random
 import time
 import logging
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 
 @dataclass
@@ -93,10 +94,12 @@ class SmartTrackSelector:
             return []
 
     def save_tracks(self) -> None:
-        """Persists updated track play counts and timestamps to disk."""
+        """Persists updated track play counts and timestamps to disk atomically."""
         try:
-            with open(self.tracks_db_path, "w", encoding="utf-8") as f:
+            temp_file = Path(f"{self.tracks_db_path}.tmp")
+            with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump([t.to_dict() for t in self.tracks], f, indent=2)
+            temp_file.replace(self.tracks_db_path)
             self.logger.debug("Saved %d tracks to %s", len(self.tracks), self.tracks_db_path)
         except Exception as exc:
             self.logger.error("Failed to save tracks database: %s", exc)
@@ -303,3 +306,81 @@ class SmartTrackSelector:
 
         # Default: Return as sorted by fitness
         return tracks
+
+    def get_replacement_track(
+        self,
+        target_mood: Dict[str, Any],
+        weather_condition: str,
+        current_staged_tracks: List[Track],
+        excluded_track_ids: Optional[Set[str]] = None,
+        genre_filter: Optional[str] = None,
+        tag_filter: Optional[str] = None,
+    ) -> Optional[Track]:
+        """
+        Finds the single best alternative candidate track from the database that is NOT already
+        in current_staged_tracks or excluded_track_ids.
+        Uses randomized sampling among top 3 candidates to ensure variety if repeated swaps occur.
+        """
+        self.tracks = self._load_tracks()
+        if not self.tracks:
+            return None
+
+        target_energy = float(target_mood.get("target_energy", 0.5))
+        target_valence = float(target_mood.get("target_valence", 0.5))
+        preferred_genres = [genre_filter] if genre_filter else target_mood.get("preferred_genres", [])
+
+        staged_ids = {t.id for t in current_staged_tracks}
+        staged_names = {f"{t.artist.lower()} - {t.title.lower()}" for t in current_staged_tracks}
+        excluded_ids = set(excluded_track_ids or [])
+
+        now = time.time()
+        candidates: List[Track] = []
+        for track in self.tracks:
+            if track.id in staged_ids or track.id in excluded_ids:
+                continue
+            norm_name = f"{track.artist.lower()} - {track.title.lower()}"
+            if norm_name in staged_names:
+                continue
+
+            self.score_track(
+                track=track,
+                target_energy=target_energy,
+                target_valence=target_valence,
+                preferred_genres=preferred_genres,
+                weather_condition=weather_condition,
+                current_time=now,
+            )
+
+            # Apply targeted priority multiplier for explicit genre / tag filters
+            if genre_filter:
+                g_low = genre_filter.lower()
+                if g_low in track.genre.lower() or any(g_low in tg.lower() for tg in track.tags):
+                    track.calculated_score = round(track.calculated_score * 3.0, 4)
+                else:
+                    track.calculated_score = round(track.calculated_score * 0.1, 4)
+
+            if tag_filter:
+                t_low = tag_filter.lower()
+                if any(t_low in tg.lower() for tg in track.tags) or t_low in track.genre.lower():
+                    track.calculated_score = round(track.calculated_score * 3.0, 4)
+                else:
+                    track.calculated_score = round(track.calculated_score * 0.1, 4)
+
+            candidates.append(track)
+
+        if not candidates:
+            # If all candidates were filtered out by excluded_ids, relax excluded_ids but keep staged_ids
+            for track in self.tracks:
+                if track.id in staged_ids:
+                    continue
+                norm_name = f"{track.artist.lower()} - {track.title.lower()}"
+                if norm_name in staged_names:
+                    continue
+                candidates.append(track)
+
+        if not candidates:
+            return None
+
+        candidates.sort(key=lambda t: t.calculated_score, reverse=True)
+        pool_size = min(3, len(candidates))
+        return random.choice(candidates[:pool_size])
