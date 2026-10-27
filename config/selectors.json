@@ -10,7 +10,7 @@
     "description": "div[data-testid='entity-description'], p[data-encore-id='type']",
     "edit_details_trigger": "button[data-testid='edit-details-button'], button[aria-label*='Edit details']",
     "edit_modal": "div[data-testid='playlist-edit-details-modal'], div[role='dialog']",
-    "cover_image_input": "input[data-testid='playlist-edit-details-image-input'], input[type='file'][accept*='image']",
+    "cover_image_input": "input[data-testid='image-file-picker'], input[data-testid='playlist-edit-details-image-input'], input[type='file'][accept*='image']",
     "cover_image_container": "button[data-testid='image-upload-button'], div[data-testid='playlist-edit-details-image-container'], button[aria-label*='Choose photo'], div[data-testid='entity-image']",
     "edit_name_input": "input[data-testid='playlist-edit-details-name-input']",
     "edit_description_textarea": "textarea[data-testid='playlist-edit-details-description-input']",

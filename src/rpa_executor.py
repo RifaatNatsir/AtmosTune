@@ -596,14 +596,23 @@ class PlaywrightRPAExecutor:
                             file_input = page.locator(cover_input_sel).first
                             file_input.set_input_files(str(cover_file), timeout=4000)
                             self.logger.info("Attached cover art image to modal: %s", cover_file.name)
-                            time.sleep(0.8)
+                            time.sleep(1.5)
                     except Exception as img_exc:
                         self.logger.warning("Cover art attachment skipped (%s). Continuing with tracks save.", img_exc)
 
                 save_locator = page.locator(save_btn).first
                 if save_locator.is_visible(timeout=2500):
                     save_locator.click()
-                    self.logger.info("Saved playlist details.")
+                    self.logger.info("Clicked save button. Waiting for Spotify image upload to finalize...")
+                    edit_modal_sel = self.selectors["playlist_view"].get(
+                        "edit_modal",
+                        "div[data-testid='playlist-edit-details-modal'], div[role='dialog']",
+                    )
+                    try:
+                        page.locator(edit_modal_sel).first.wait_for(state="hidden", timeout=12000)
+                        self.logger.info("Saved playlist details and dynamic cover art successfully.")
+                    except Exception:
+                        time.sleep(2.0)
         except Exception as exc:
             self.logger.debug("Playlist metadata update bypassed: %s", exc)
 
@@ -652,14 +661,17 @@ class PlaywrightRPAExecutor:
             input_locator = page.locator(file_input_sel).first
             input_locator.set_input_files(str(cover_file), timeout=4000)
             self.logger.info("Cover art file dispatched to input selector.")
-            time.sleep(0.8)
+            time.sleep(1.5)
 
             if opened_modal:
                 save_locator = page.locator(save_btn).first
                 if save_locator.is_visible(timeout=2500):
                     save_locator.click()
-                    time.sleep(1.0)
-                    self.logger.info("Cover art saved to playlist.")
+                    try:
+                        modal.wait_for(state="hidden", timeout=12000)
+                        self.logger.info("Cover art saved to playlist successfully.")
+                    except Exception:
+                        time.sleep(2.0)
 
             return True
         except Exception as exc:
