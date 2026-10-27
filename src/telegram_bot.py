@@ -80,6 +80,33 @@ class AtmosTelegramBot:
         )
         self.bot.send_message(chat_id, msg)
 
+    def _edit_or_send(
+        self,
+        chat_id: int,
+        text: str,
+        reply_markup: Optional[types.InlineKeyboardMarkup] = None,
+        message_id: Optional[int] = None,
+    ) -> Any:
+        """Edits an existing inline message in-place to prevent chat spam, or sends fresh message if absent."""
+        if message_id:
+            try:
+                return self.bot.edit_message_text(
+                    text=text,
+                    chat_id=chat_id,
+                    message_id=message_id,
+                    reply_markup=reply_markup,
+                    parse_mode="Markdown",
+                )
+            except Exception as exc:
+                self.logger.debug("In-place message edit bypassed (%s), sending fresh message.", exc)
+
+        return self.bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            reply_markup=reply_markup,
+            parse_mode="Markdown",
+        )
+
     def _get_main_keyboard(self) -> types.InlineKeyboardMarkup:
         """Constructs interactive dashboard inline keyboard."""
         keyboard = types.InlineKeyboardMarkup(row_width=2)
@@ -293,6 +320,7 @@ class AtmosTelegramBot:
         @self.bot.callback_query_handler(func=lambda call: True)
         def handle_callbacks(call: types.CallbackQuery):
             chat_id = call.message.chat.id
+            msg_id = call.message.message_id
             if not self._is_authorized(chat_id):
                 self._send_unauthorized_msg(chat_id)
                 self.bot.answer_callback_query(call.id)
@@ -301,40 +329,70 @@ class AtmosTelegramBot:
             self.bot.answer_callback_query(call.id)
 
             if call.data == "btn_rebuild":
-                self._trigger_rebuild_async(chat_id)
+                self._trigger_rebuild_async(chat_id, message_id=msg_id)
             elif call.data == "btn_weather":
-                self._send_weather_info(chat_id)
+                self._send_weather_info(chat_id, message_id=msg_id)
             elif call.data == "btn_hits_menu":
-                self.bot.send_message(chat_id, "🔥 *Pilih Tangga Lagu Hits Terpopuler:*", reply_markup=self._get_hits_keyboard())
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    text="🔥 *Pilih Tangga Lagu Hits Terpopuler:*\n_Pilih kategori hits yang ingin disinkronkan ke Spotify:_",
+                    reply_markup=self._get_hits_keyboard(),
+                )
             elif call.data == "btn_genre_menu":
-                self.bot.send_message(chat_id, "🎸 *Pilih Genre Musik yang Ingin Didengarkan:*", reply_markup=self._get_genre_keyboard())
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    text="🎸 *Pilih Genre Musik yang Ingin Didengarkan:*\n_Lagu akan disesuaikan dengan cuaca dan genre pilihan Anda:_",
+                    reply_markup=self._get_genre_keyboard(),
+                )
             elif call.data.startswith("set_hits:"):
                 hit_type = call.data.split(":", 1)[1]
                 tag = "hits_indo" if hit_type in ("indo", "indopop") else ("hits_global" if hit_type == "global" else hit_type)
-                self._trigger_rebuild_async(chat_id, tag_filter=tag)
+                self._trigger_rebuild_async(chat_id, tag_filter=tag, message_id=msg_id)
             elif call.data.startswith("set_genre:"):
                 genre_name = call.data.split(":", 1)[1]
-                self._trigger_rebuild_async(chat_id, genre_filter=genre_name)
+                self._trigger_rebuild_async(chat_id, genre_filter=genre_name, message_id=msg_id)
             elif call.data == "btn_preview":
-                self._send_preview(chat_id)
+                self._send_preview(chat_id, message_id=msg_id)
             elif call.data == "btn_status":
-                self._send_status(chat_id)
+                self._send_status(chat_id, message_id=msg_id)
             elif call.data == "btn_mood_menu":
-                self.bot.send_message(chat_id, "🎨 *Select Target Atmosphere:*", reply_markup=self._get_mood_keyboard())
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    text="🎨 *Select Target Atmosphere:*\n_Pilih suasana hati yang ingin Anda bangun:_",
+                    reply_markup=self._get_mood_keyboard(),
+                )
             elif call.data.startswith("set_mood:"):
                 mood_name = call.data.split(":", 1)[1]
-                self._trigger_rebuild_async(chat_id, mood_override=mood_name)
+                self._trigger_rebuild_async(chat_id, mood_override=mood_name, message_id=msg_id)
             elif call.data == "btn_clear_prompt":
-                self._send_clear_prompt(chat_id)
+                self._send_clear_prompt(chat_id, message_id=msg_id)
             elif call.data == "btn_clear_confirm":
-                self._trigger_clear_async(chat_id)
+                self._trigger_clear_async(chat_id, message_id=msg_id)
             elif call.data == "btn_clear_cancel":
-                self.bot.send_message(chat_id, "❌ Clear operation cancelled.", reply_markup=self._get_main_keyboard())
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    text="❌ *Clear operation cancelled.*\n\nKembali ke menu utama:",
+                    reply_markup=self._get_main_keyboard(),
+                )
             elif call.data == "btn_back":
-                self.bot.send_message(chat_id, "Main Menu:", reply_markup=self._get_main_keyboard())
+                welcome_text = (
+                    "👋 *AtmosTune Dashboard*\n\n"
+                    "Control your Spotify atmospheric playlist dynamically based on real-time local weather & time of day.\n\n"
+                    "Select an option below:"
+                )
+                self._edit_or_send(
+                    chat_id=chat_id,
+                    message_id=msg_id,
+                    text=welcome_text,
+                    reply_markup=self._get_main_keyboard(),
+                )
 
-    def _send_weather_info(self, chat_id: int) -> None:
-        """Fetches live meteorological context and sends formatted status."""
+    def _send_weather_info(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Fetches live meteorological context and sends formatted status in-place."""
         try:
             fetcher = ContextFetcher(config=self.config, logger=self.logger)
             ctx: WeatherTimeContext = fetcher.get_current_context()
@@ -355,13 +413,13 @@ class AtmosTelegramBot:
                 f"   _{desc}_\n"
                 f"   Target Energy: `{target_e}` | Target Valence: `{target_v}`"
             )
-            self.bot.send_message(chat_id, msg, reply_markup=self._get_main_keyboard())
+            self._edit_or_send(chat_id=chat_id, text=msg, reply_markup=self._get_main_keyboard(), message_id=message_id)
         except Exception as exc:
             self.logger.error("Failed to fetch weather for Telegram: %s", exc)
-            self.bot.send_message(chat_id, f"⚠️ Error querying weather: `{exc}`")
+            self._edit_or_send(chat_id=chat_id, text=f"⚠️ Error querying weather: `{exc}`", message_id=message_id)
 
-    def _send_preview(self, chat_id: int) -> None:
-        """Computes track selection without modifying Spotify."""
+    def _send_preview(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Computes track selection without modifying Spotify in-place."""
         try:
             fetcher = ContextFetcher(config=self.config, logger=self.logger)
             ctx = fetcher.get_current_context()
@@ -381,20 +439,20 @@ class AtmosTelegramBot:
                 f"🎵 *Preview: {mood.upper()}*",
                 f"_{ctx.condition} at {ctx.time_block} ({ctx.temperature:+.1f}°C)_\n",
             ]
-            for i, trk in enumerate(tracks[:15], 1):
+            for i, trk in enumerate(tracks[:12], 1):
                 msg_lines.append(f"`{i:02d}.` *{trk.artist}* - {trk.title} `[E: {trk.energy:.2f}]`")
 
-            if len(tracks) > 15:
-                msg_lines.append(f"_...and {len(tracks) - 15} more tracks (Total: {len(tracks)})_")
+            if len(tracks) > 12:
+                msg_lines.append(f"_...dan {len(tracks) - 12} lagu lainnya (Total: {len(tracks)})_")
 
             msg = "\n".join(msg_lines)
-            self.bot.send_message(chat_id, msg, reply_markup=self._get_main_keyboard())
+            self._edit_or_send(chat_id=chat_id, text=msg, reply_markup=self._get_main_keyboard(), message_id=message_id)
         except Exception as exc:
             self.logger.error("Failed to generate preview for Telegram: %s", exc)
-            self.bot.send_message(chat_id, f"⚠️ Error generating preview: `{exc}`")
+            self._edit_or_send(chat_id=chat_id, text=f"⚠️ Error generating preview: `{exc}`", message_id=message_id)
 
-    def _send_status(self, chat_id: int) -> None:
-        """Audits current state file and cooldown status."""
+    def _send_status(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Audits current state file and cooldown status in-place."""
         state_path = Path("./data/state.json")
         try:
             with open(state_path, "r", encoding="utf-8") as f:
@@ -423,31 +481,33 @@ class AtmosTelegramBot:
             f"• *Last Rebuild*: `{last_run}`\n\n"
             f"🔗 [Target Spotify Playlist]({target_url})"
         )
-        self.bot.send_message(chat_id, msg, reply_markup=self._get_main_keyboard())
+        self._edit_or_send(chat_id=chat_id, text=msg, reply_markup=self._get_main_keyboard(), message_id=message_id)
 
-    def _send_clear_prompt(self, chat_id: int) -> None:
-        """Sends confirmation prompt before clearing playlist."""
+    def _send_clear_prompt(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Sends confirmation prompt before clearing playlist in-place."""
         keyboard = types.InlineKeyboardMarkup(row_width=2)
         btn_yes = types.InlineKeyboardButton("🗑️ Yes, Delete All", callback_data="btn_clear_confirm")
         btn_no = types.InlineKeyboardButton("❌ Cancel", callback_data="btn_clear_cancel")
         keyboard.add(btn_yes, btn_no)
 
         msg = (
-            "⚠️ *Confirm Playlist Reset*\n\n"
-            "Are you sure you want to delete all tracks currently on your Spotify playlist?\n"
-            "This will clear the playlist to 0 tracks."
+            "⚠️ *Konfirmasi Reset Playlist*\n\n"
+            "Apakah Anda yakin ingin menghapus semua lagu yang ada di playlist Spotify sekarang?\n"
+            "Playlist akan dikosongkan menjadi 0 lagu."
         )
-        self.bot.send_message(chat_id, msg, reply_markup=keyboard)
+        self._edit_or_send(chat_id=chat_id, text=msg, reply_markup=keyboard, message_id=message_id)
 
-    def _trigger_clear_async(self, chat_id: int) -> None:
-        """Spawns background worker to clear Spotify playlist."""
+    def _trigger_clear_async(self, chat_id: int, message_id: Optional[int] = None) -> None:
+        """Spawns background worker to clear Spotify playlist in-place."""
         with self._busy_lock:
             if self._is_busy:
                 self.bot.send_message(chat_id, "⏳ AtmosTune is currently executing another task. Please wait.")
                 return
             self._is_busy = True
 
-        status_msg = self.bot.send_message(chat_id, "⏳ Launching headless RPA browser to clear playlist...")
+        status_text = "⏳ *Membuka headless RPA browser untuk mengosongkan playlist Spotify...*"
+        status_msg = self._edit_or_send(chat_id=chat_id, text=status_text, message_id=message_id)
+        target_msg_id = status_msg.message_id if status_msg else message_id
 
         def _worker():
             try:
@@ -465,11 +525,11 @@ class AtmosTelegramBot:
                     removed = res.get("tracks_removed", 0)
                     elapsed = res.get("elapsed_seconds", 0)
                     self.bot.edit_message_text(
-                        f"✅ *Playlist Reset Complete!*\n\n"
-                        f"Removed `{removed}` tracks in `{elapsed:.1f}s`.\n"
-                        f"Target playlist is now empty.",
+                        f"✅ *Playlist Reset Berhasil!*\n\n"
+                        f"Berhasil menghapus `{removed}` lagu lama dalam `{elapsed:.1f}s`.\n"
+                        f"Playlist Spotify sekarang sudah kosong.",
                         chat_id=chat_id,
-                        message_id=status_msg.message_id,
+                        message_id=target_msg_id,
                         reply_markup=self._get_main_keyboard(),
                     )
                 else:
@@ -477,14 +537,16 @@ class AtmosTelegramBot:
                     self.bot.edit_message_text(
                         f"❌ *Failed to clear playlist*: `{err}`",
                         chat_id=chat_id,
-                        message_id=status_msg.message_id,
+                        message_id=target_msg_id,
+                        reply_markup=self._get_main_keyboard(),
                     )
             except Exception as exc:
                 self.logger.error("Clear error: %s", exc)
                 self.bot.edit_message_text(
                     f"❌ *Clear error*: `{exc}`",
                     chat_id=chat_id,
-                    message_id=status_msg.message_id,
+                    message_id=target_msg_id,
+                    reply_markup=self._get_main_keyboard(),
                 )
             finally:
                 with self._busy_lock:
@@ -498,28 +560,34 @@ class AtmosTelegramBot:
         mood_override: Optional[str] = None,
         genre_filter: Optional[str] = None,
         tag_filter: Optional[str] = None,
+        message_id: Optional[int] = None,
     ) -> None:
-        """Spawns background thread to execute full headless RPA rebuild."""
+        """Spawns background thread to execute full headless RPA rebuild in-place."""
         with self._busy_lock:
             if self._is_busy:
-                self.bot.send_message(chat_id, "⏳ Another rebuild is already in progress. Please wait a moment.")
+                busy_msg = "⏳ Proses lain sedang berjalan di Spotify. Mohon tunggu beberapa saat..."
+                if message_id:
+                    self.bot.edit_message_text(busy_msg, chat_id=chat_id, message_id=message_id, reply_markup=self._get_main_keyboard())
+                else:
+                    self.bot.send_message(chat_id, busy_msg)
                 return
             self._is_busy = True
 
         if tag_filter == "hits_indo":
-            status_text = "⏳ *Menyiapkan playlist Top Hits Indonesia...*"
+            status_text = "⏳ *Menyiapkan playlist Top Hits Indonesia...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits Indonesia..._"
         elif tag_filter == "hits_global":
-            status_text = "⏳ *Menyiapkan playlist Global Top Hits...*"
+            status_text = "⏳ *Menyiapkan playlist Global Top Hits...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits dunia..._"
         elif tag_filter == "viral":
-            status_text = "⏳ *Menyiapkan playlist Viral Indonesia...*"
+            status_text = "⏳ *Menyiapkan playlist Viral Indonesia...*\n_Membersihkan lagu lama & memasukkan lagu viral..._"
         elif genre_filter:
-            status_text = f"⏳ *Menyiapkan playlist genre '{genre_filter.title()}'...*"
+            status_text = f"⏳ *Menyiapkan playlist genre '{genre_filter.title()}'...*\n_Membersihkan lagu lama & menyinkronkan ke Spotify..._"
         elif mood_override:
-            status_text = f"⏳ *Initiating Rebuild for mood '{mood_override}'...*"
+            status_text = f"⏳ *Menyiapkan playlist mood '{mood_override}'...*\n_Membersihkan lagu lama & menyinkronkan ke Spotify..._"
         else:
-            status_text = "⏳ *Initiating Rebuild for current real-time atmosphere...*"
+            status_text = "⏳ *Menyiapkan playlist sesuai cuaca real-time...*\n_Membersihkan lagu lama & menyinkronkan ke Spotify..._"
 
-        status_msg = self.bot.send_message(chat_id, status_text)
+        status_msg = self._edit_or_send(chat_id=chat_id, text=status_text, message_id=message_id)
+        target_msg_id = status_msg.message_id if status_msg else message_id
 
         def _worker():
             try:
@@ -543,16 +611,16 @@ class AtmosTelegramBot:
                     playlist_url = self.config.get("playlist", {}).get("target_playlist_url", "")
 
                     reply_text = (
-                        f"✅ *Spotify Playlist Rebuilt Successfully!*\n\n"
+                        f"✅ *Spotify Playlist Berhasil Disinkronkan!*\n\n"
                         f"🎨 *Tema / Mood*: *{mood_name}*\n"
                         f"🌦️ *Atmosphere*: `{weather}` ({temp:+.1f}°C) • `{block}`\n"
-                        f"🎵 *Tracks*: `{tracks_count}` tracks added in `{elapsed:.1f}s`\n\n"
+                        f"🎵 *Tracks*: `{tracks_count}` lagu dimasukkan dalam `{elapsed:.1f}s`\n\n"
                         f"🔗 [Buka 'MyAtmosTune' di Spotify]({playlist_url})"
                     )
                     self.bot.edit_message_text(
                         reply_text,
                         chat_id=chat_id,
-                        message_id=status_msg.message_id,
+                        message_id=target_msg_id,
                         reply_markup=self._get_main_keyboard(),
                     )
                 else:
@@ -560,20 +628,22 @@ class AtmosTelegramBot:
                     self.bot.edit_message_text(
                         f"❌ *Rebuild Failed*: {err}",
                         chat_id=chat_id,
-                        message_id=status_msg.message_id,
+                        message_id=target_msg_id,
+                        reply_markup=self._get_main_keyboard(),
                     )
             except AuthenticationRequiredError:
                 self.bot.edit_message_text(
                     "❌ *Authentication Required!*\n\nPlease run `python main.py --auth` on your computer to log in once.",
                     chat_id=chat_id,
-                    message_id=status_msg.message_id,
+                    message_id=target_msg_id,
                 )
             except Exception as exc:
                 self.logger.error("Rebuild error: %s", exc)
                 self.bot.edit_message_text(
                     f"❌ *Critical Execution Error*: `{exc}`",
                     chat_id=chat_id,
-                    message_id=status_msg.message_id,
+                    message_id=target_msg_id,
+                    reply_markup=self._get_main_keyboard(),
                 )
             finally:
                 with self._busy_lock:
