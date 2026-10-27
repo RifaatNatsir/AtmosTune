@@ -209,6 +209,26 @@ def run_atmostune_cycle(
             "target_valence": 0.72,
             "preferred_genres": ["pop", "dance", "electronic"],
         }
+    elif tag_filter in ("breakout", "tv_hits") or genre_filter == "breakout":
+        tag_filter = "breakout"
+        genre_filter = None
+        mood_name = "Breakout NET.TV Hits"
+        matched_mood = {
+            "mood_name": mood_name,
+            "description": "Nostalgic chart toppers and viral music video vibes inspired by Breakout NET.TV",
+            "target_energy": 0.78,
+            "target_valence": 0.74,
+            "preferred_genres": ["pop", "electronic", "indopop", "indie", "r&b"],
+        }
+    elif genre_filter and genre_filter.lower() in ("r&b", "soul"):
+        mood_name = "R&B & Soul Vibes"
+        matched_mood = {
+            "mood_name": mood_name,
+            "description": "Smooth, slow-jam, and soulful R&B grooves (Usher, SZA, Kehlani, etc.)",
+            "target_energy": 0.55,
+            "target_valence": 0.58,
+            "preferred_genres": ["r&b"],
+        }
     elif genre_filter:
         mood_name = f"{genre_filter.title()} Sound"
         matched_mood = {

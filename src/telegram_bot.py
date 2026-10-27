@@ -154,6 +154,7 @@ class AtmosTelegramBot:
         hits = [
             ("🇮🇩 Top Hits Indonesia", "indo"),
             ("🌍 Global Top Hits", "global"),
+            ("📺 Breakout NET.TV", "breakout"),
             ("📈 Viral Indonesia", "viral"),
             ("✨ Indo Pop Hits", "indopop"),
         ]
@@ -171,12 +172,14 @@ class AtmosTelegramBot:
         genres = [
             ("🇮🇩 Indo Pop", "indopop"),
             ("🎵 Global Pop", "pop"),
+            ("🎧 R&B / Soul", "r&b"),
+            ("📺 Breakout Hits", "breakout"),
             ("🎸 Indie & Rock", "indie"),
             ("☕ Lo-Fi & Chill", "lofi"),
             ("⚡ Synthwave & EDM", "synthwave"),
             ("🌧️ Ambient & Sleep", "ambient"),
+            ("🏖️ Acoustic & Folk", "acoustic"),
             ("🎻 Classical & Piano", "classical"),
-            ("🎧 R&B / Chillwave", "r&b"),
         ]
         buttons = [
             types.InlineKeyboardButton(label, callback_data=f"set_genre:{name}")
@@ -377,12 +380,22 @@ class AtmosTelegramBot:
             elif call.data.startswith("set_hits:"):
                 self.bot.answer_callback_query(call.id)
                 hit_type = call.data.split(":", 1)[1]
-                tag = "hits_indo" if hit_type in ("indo", "indopop") else ("hits_global" if hit_type == "global" else hit_type)
+                if hit_type in ("indo", "indopop"):
+                    tag = "hits_indo"
+                elif hit_type == "global":
+                    tag = "hits_global"
+                elif hit_type == "breakout":
+                    tag = "breakout"
+                else:
+                    tag = hit_type
                 self._stage_and_preview(chat_id, tag_filter=tag, message_id=msg_id)
             elif call.data.startswith("set_genre:"):
                 self.bot.answer_callback_query(call.id)
                 genre_name = call.data.split(":", 1)[1]
-                self._stage_and_preview(chat_id, genre_filter=genre_name, message_id=msg_id)
+                if genre_name == "breakout":
+                    self._stage_and_preview(chat_id, tag_filter="breakout", message_id=msg_id)
+                else:
+                    self._stage_and_preview(chat_id, genre_filter=genre_name, message_id=msg_id)
             elif call.data == "btn_preview":
                 self.bot.answer_callback_query(call.id)
                 self._stage_and_preview(chat_id, message_id=msg_id)
@@ -481,8 +494,11 @@ class AtmosTelegramBot:
             filter_desc = " • *Kategori*: `Top Hits Indonesia` 🇮🇩"
         elif session.get("tag_filter") == "hits_global":
             filter_desc = " • *Kategori*: `Global Top Hits` 🌍"
+        elif session.get("tag_filter") == "breakout":
+            filter_desc = " • *Kategori*: `Breakout NET.TV Hits` 📺"
         elif session.get("genre_filter"):
-            filter_desc = f" • *Genre*: `{session['genre_filter'].title()}` 🎸"
+            g_title = session["genre_filter"].upper() if session["genre_filter"].lower() == "r&b" else session["genre_filter"].title()
+            filter_desc = f" • *Genre*: `{g_title}` 🎧"
         elif session.get("mood_override"):
             filter_desc = f" • *Mood Override*: `{session['mood_override']}` 🎨"
 
@@ -564,6 +580,26 @@ class AtmosTelegramBot:
                     "target_valence": 0.72,
                     "preferred_genres": ["pop", "dance", "electronic"],
                 }
+            elif tag_filter in ("breakout", "tv_hits") or genre_filter == "breakout":
+                tag_filter = "breakout"
+                genre_filter = None
+                mood_name = "Breakout NET.TV Hits"
+                matched_mood = {
+                    "mood_name": mood_name,
+                    "description": "Nostalgic chart-topping music videos and vibes inspired by Breakout NET.TV",
+                    "target_energy": 0.78,
+                    "target_valence": 0.74,
+                    "preferred_genres": ["pop", "electronic", "indopop", "indie", "r&b"],
+                }
+            elif genre_filter and genre_filter.lower() in ("r&b", "soul"):
+                mood_name = "R&B & Soul Vibes"
+                matched_mood = {
+                    "mood_name": mood_name,
+                    "description": "Smooth, sensual, and soulful R&B grooves (Usher, SZA, Kehlani, etc.)",
+                    "target_energy": 0.55,
+                    "target_valence": 0.58,
+                    "preferred_genres": ["r&b"],
+                }
             elif genre_filter:
                 mood_name = f"{genre_filter.title()} Sound"
                 matched_mood = {
@@ -573,6 +609,7 @@ class AtmosTelegramBot:
                     "target_valence": matched_mood.get("target_valence", 0.50),
                     "preferred_genres": [genre_filter],
                 }
+
             else:
                 mood_name = matched_mood.get("mood_name", "Atmospheric Drift")
 
@@ -896,8 +933,12 @@ class AtmosTelegramBot:
             status_text = "⏳ *Menyiapkan playlist Top Hits Indonesia...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits Indonesia..._"
         elif tag_filter == "hits_global":
             status_text = "⏳ *Menyiapkan playlist Global Top Hits...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits dunia..._"
+        elif tag_filter == "breakout":
+            status_text = "⏳ *Menyiapkan playlist Breakout NET.TV Hits...*\n_Membersihkan lagu lama & memasukkan 20 lagu hits Breakout..._"
         elif tag_filter == "viral":
             status_text = "⏳ *Menyiapkan playlist Viral Indonesia...*\n_Membersihkan lagu lama & memasukkan lagu viral..._"
+        elif genre_filter and genre_filter.lower() in ("r&b", "soul"):
+            status_text = "⏳ *Menyiapkan playlist genre 'R&B / Soul'...*\n_Membersihkan lagu lama & menyinkronkan ke Spotify..._"
         elif genre_filter:
             status_text = f"⏳ *Menyiapkan playlist genre '{genre_filter.title()}'...*\n_Membersihkan lagu lama & menyinkronkan ke Spotify..._"
         elif mood_override:
